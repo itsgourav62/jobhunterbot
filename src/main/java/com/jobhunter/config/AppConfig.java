@@ -1,9 +1,8 @@
 package com.jobhunter.config;
 
+import com.jobhunter.autofill.BrowserSetup;
+import com.jobhunter.utils.ResumeUtils;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
-import io.github.bonigarcia.wdm.WebDriverManager;
 
 public class AppConfig {
 
@@ -22,21 +21,31 @@ public class AppConfig {
     // Singleton WebDriver instance
     public static WebDriver getDriver() {
         if (driver == null) {
-            WebDriverManager.chromedriver().setup();
-            ChromeOptions options = new ChromeOptions();
-            options.addArguments("--remote-allow-origins=*");
-            options.addArguments("--no-sandbox");
-            options.addArguments("--disable-dev-shm-usage");
-            options.addArguments("--disable-blink-features=AutomationControlled");
-            options.addArguments("--disable-gpu");
-            driver = new ChromeDriver(options);
-            driver.manage().window().maximize();
+            driver = BrowserSetup.getBraveDriver();
         }
         return driver;
     }
 
+    /**
+     * Get resume path, handling Google Drive links and downloads
+     */
     public static String getResumePath() {
+        // Handle Google Drive links and download if needed
+        return ResumeUtils.downloadResumeIfNeeded(resumePath);
+    }
+
+    /**
+     * Get raw resume path (without processing)
+     */
+    public static String getRawResumePath() {
         return resumePath;
+    }
+
+    /**
+     * Validate resume accessibility
+     */
+    public static boolean validateResumeAccess() {
+        return ResumeUtils.validateResumeAccess(resumePath);
     }
 
     public static String getDiscordWebhookUrl() {
@@ -49,6 +58,16 @@ public class AppConfig {
 
     public static String getEmailPassword() {
         return emailPassword;
+    }
+
+    /**
+     * Cleanup temp files on application shutdown
+     */
+    public static void cleanup() {
+        ResumeUtils.cleanupTempFiles();
+        if (driver != null) {
+            driver.quit();
+        }
     }
 
     // Optionally add setter methods if you want runtime updates

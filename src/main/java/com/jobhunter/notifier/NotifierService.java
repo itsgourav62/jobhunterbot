@@ -18,9 +18,12 @@ public class NotifierService {
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");
+            conn.setRequestProperty("User-Agent", "JobHunterBot/1.0");
             conn.setDoOutput(true);
 
-            String payload = "{\"content\": \"" + message + "\"}";
+            // Escape quotes in message for JSON
+            String escapedMessage = message.replace("\"", "\\\"").replace("\n", "\\n");
+            String payload = "{\"content\": \"" + escapedMessage + "\"}";
 
             try (OutputStream os = conn.getOutputStream()) {
                 os.write(payload.getBytes());
@@ -28,7 +31,11 @@ public class NotifierService {
             }
 
             int responseCode = conn.getResponseCode();
-            System.out.println("Discord response code: " + responseCode);
+            if (responseCode == 200 || responseCode == 204) {
+                System.out.println("✅ Discord notification sent successfully!");
+            } else {
+                System.out.println("⚠️ Discord response code: " + responseCode);
+            }
 
         } catch (Exception e) {
             System.out.println("⚠️ Error sending Discord notification: " + e.getMessage());
