@@ -19,11 +19,24 @@ dependencies {
     // Selenium for browser automation
     implementation 'org.seleniumhq.selenium:selenium-java:4.15.0'
 
-    // Automatically manages browser drivers
+    // WebDriverManager for automatic driver management
     implementation 'io.github.bonigarcia:webdrivermanager:5.6.2'
+
+    // Apache Tika for resume parsing (PDF/DOCX extraction)
+    implementation 'org.apache.tika:tika-core:2.9.0'
+    implementation 'org.apache.tika:tika-parsers-standard-package:2.9.0'
 
     // Simple logging
     implementation 'org.slf4j:slf4j-simple:2.0.9'
+
+    // For testing
+    testImplementation 'junit:junit:4.13.2'
+
+    // Jakarta Mail (for email notifications)
+    implementation 'com.sun.mail:jakarta.mail:2.0.1'
+
+
+
 }
 
 // Main application configuration
@@ -31,33 +44,27 @@ application {
     mainClass = 'com.jobhunter.Main'
 }
 
-// Configure run task
+// Run task
 run {
     standardInput = System.in
     standardOutput = System.out
     errorOutput = System.err
 }
 
-// Custom task with explicit configuration
+// Custom task to run the bot
 task runBot(type: JavaExec) {
     group = 'application'
     description = 'Run the Job Hunter Bot'
     classpath = sourceSets.main.runtimeClasspath
     mainClass = 'com.jobhunter.Main'
-
-    // Ensure output is shown
     standardInput = System.in
     standardOutput = System.out
     errorOutput = System.err
-
-    // Add JVM arguments if needed
     jvmArgs = ['-Dfile.encoding=UTF-8']
-
-    // This ensures the task always runs
     outputs.upToDateWhen { false }
 }
 
-// Task to test if everything is set up correctly
+// Task to test setup
 task testSetup {
     doLast {
         println "✅ Gradle is working!"
