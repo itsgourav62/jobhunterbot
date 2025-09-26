@@ -1,0 +1,68 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group = 'com.jobhunter'
+version = '1.0-SNAPSHOT'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_24
+    targetCompatibility = JavaVersion.VERSION_24
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Selenium for browser automation
+    implementation 'org.seleniumhq.selenium:selenium-java:4.15.0'
+
+    // Automatically manages browser drivers
+    implementation 'io.github.bonigarcia:webdrivermanager:5.6.2'
+
+    // Simple logging
+    implementation 'org.slf4j:slf4j-simple:2.0.9'
+}
+
+// Main application configuration
+application {
+    mainClass = 'com.jobhunter.Main'
+}
+
+// Configure run task
+run {
+    standardInput = System.in
+    standardOutput = System.out
+    errorOutput = System.err
+}
+
+// Custom task with explicit configuration
+task runBot(type: JavaExec) {
+    group = 'application'
+    description = 'Run the Job Hunter Bot'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'com.jobhunter.Main'
+
+    // Ensure output is shown
+    standardInput = System.in
+    standardOutput = System.out
+    errorOutput = System.err
+
+    // Add JVM arguments if needed
+    jvmArgs = ['-Dfile.encoding=UTF-8']
+
+    // This ensures the task always runs
+    outputs.upToDateWhen { false }
+}
+
+// Task to test if everything is set up correctly
+task testSetup {
+    doLast {
+        println "✅ Gradle is working!"
+        println "Java Version: ${System.getProperty('java.version')}"
+        println "Project Dir: ${projectDir}"
+        println "Build Dir: ${buildDir}"
+    }
+}
