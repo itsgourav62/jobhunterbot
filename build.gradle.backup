@@ -4,11 +4,11 @@ plugins {
 }
 
 group = 'com.jobhunter'
-version = '2.0.0'
+version = '1.0-SNAPSHOT'
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+    sourceCompatibility = JavaVersion.VERSION_24
+    targetCompatibility = JavaVersion.VERSION_24
 }
 
 repositories {
@@ -18,53 +18,71 @@ repositories {
 dependencies {
     // Selenium for browser automation
     implementation 'org.seleniumhq.selenium:selenium-java:4.15.0'
-    
+
     // WebDriverManager for automatic driver management
     implementation 'io.github.bonigarcia:webdrivermanager:5.6.2'
-    
+
     // Apache Tika for resume parsing (PDF/DOCX extraction)
-    implementation 'org.apache.tika:tika-core:2.9.1'
-    implementation 'org.apache.tika:tika-parsers-standard-package:2.9.1'
-    
-    // Logging
-    implementation 'org.slf4j:slf4j-api:2.0.9'
+    implementation 'org.apache.tika:tika-core:2.9.0'
+    implementation 'org.apache.tika:tika-parsers-standard-package:2.9.0'
+
+    // Simple logging
     implementation 'org.slf4j:slf4j-simple:2.0.9'
-    
-    // JUnit 5 for testing
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    
+
+    // For testing
+    testImplementation 'junit:junit:4.13.2'
+
+    //Jupiter API for testing
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.0'
+
     // Jakarta Mail (for email notifications)
     implementation 'com.sun.mail:jakarta.mail:2.0.1'
-    
+
     // Jackson for JSON parsing (API responses)
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.16.1'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.16.0'
     
     // H2 Database for embedded storage
     implementation 'com.h2database:h2:2.2.224'
-    
-    // HTTP client
-    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
-    
-    // Commons IO for file operations
-    implementation 'commons-io:commons-io:2.15.1'
-    
-    // JSoup for HTML parsing
-    implementation 'org.jsoup:jsoup:1.17.2'
+
 }
 
 test {
-    useJUnitPlatform()
-    testLogging {
-        events "passed", "skipped", "failed"
-        exceptionFormat "full"
-        showStandardStreams = true
-    }
+    enabled = false
 }
 
-// Main application task
+// Main application configuration
 application {
     mainClass = 'com.jobhunter.Main'
+}
+
+// Run task
+run {
+    standardInput = System.in
+    standardOutput = System.out
+    errorOutput = System.err
+}
+
+// Custom task to run the bot
+task runBot(type: JavaExec) {
+    group = 'application'
+    description = 'Run the Job Hunter Bot'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'com.jobhunter.Main'
+    standardInput = System.in
+    standardOutput = System.out
+    errorOutput = System.err
+    jvmArgs = ['-Dfile.encoding=UTF-8']
+    outputs.upToDateWhen { false }
+}
+
+// Task to test setup
+task testSetup {
+    doLast {
+        println "✅ Gradle is working!"
+        println "Java Version: ${System.getProperty('java.version')}"
+        println "Project Dir: ${projectDir}"
+        println "Build Dir: ${buildDir}"
+    }
 }
 
 // Task to run API-only job search (faster for CI/CD)
@@ -73,6 +91,7 @@ task runAPIJob(type: JavaExec) {
     description = 'Run API-only Job Search (faster, TOS-compliant)'
     classpath = sourceSets.main.runtimeClasspath
     mainClass = 'com.jobhunter.APIJobRunner'
+    standardInput = System.in
     standardOutput = System.out
     errorOutput = System.err
     jvmArgs = ['-Dfile.encoding=UTF-8', '-Dheadless=true']
@@ -82,22 +101,12 @@ task runAPIJob(type: JavaExec) {
 // Smart application workflow task
 task smartApply(type: JavaExec) {
     group = 'application'
-    description = 'Smart job application workflow - finds best job matches'
+    description = 'Smart job application workflow - collects best job links for easy application'
     classpath = sourceSets.main.runtimeClasspath
     mainClass = 'com.jobhunter.workflow.SmartApplicationWorkflow'
+    standardInput = System.in
     standardOutput = System.out
     errorOutput = System.err
     jvmArgs = ['-Dfile.encoding=UTF-8']
     outputs.upToDateWhen { false }
-}
-
-// Setup validation task
-task validateSetup(type: JavaExec) {
-    group = 'verification'
-    description = 'Validate Job Hunter Bot setup and configuration'
-    classpath = sourceSets.main.runtimeClasspath
-    mainClass = 'com.jobhunter.SetupValidator'
-    standardOutput = System.out
-    errorOutput = System.err
-    jvmArgs = ['-Dfile.encoding=UTF-8']
 }

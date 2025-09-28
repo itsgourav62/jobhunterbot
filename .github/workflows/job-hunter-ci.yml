@@ -1,4 +1,4 @@
-name: Job Hunter Bot - Daily Smart Application Workflow
+name: Job Hunter Bot - Smart Job Discovery & Notifications
 
 on:
   push:
@@ -6,8 +6,8 @@ on:
   pull_request:
     branches: [ main ]
   schedule:
-    # Run daily at 9 AM UTC (2:30 PM IST) - Perfect lunch break timing!
-    - cron: '0 9 * * *'
+    # Run every 12 hours: 6:00 AM and 6:00 PM UTC (11:30 AM and 11:30 PM IST)
+    - cron: '0 6,18 * * *'
   workflow_dispatch:
     inputs:
       run_type:
@@ -18,7 +18,8 @@ on:
         options:
         - smart_apply
         - api_only
-        - test_setup
+        - validate_setup
+        - test_only
 
 env:
   JAVA_VERSION: 21
@@ -29,8 +30,8 @@ env:
   DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
 
 jobs:
-  # Build and validate
-  build-and-validate:
+  # Build and test validation
+  build-and-test:
     runs-on: ubuntu-latest
     
     steps:
@@ -56,18 +57,46 @@ jobs:
     - name: 🔧 Grant execute permission for gradlew
       run: chmod +x gradlew
 
-    - name: 🏗️ Build and validate
-      run: ./gradlew build testSetup --no-daemon
+    - name: 🏗️ Build application
+      run: ./gradlew build --no-daemon --stacktrace
+
+    - name: 🧪 Run comprehensive tests
+      run: ./gradlew test --no-daemon --stacktrace
+      env:
+        JOB_HUNTER_NAME: ${{ env.JOB_HUNTER_NAME }}
+        JOB_HUNTER_EMAIL: ${{ env.JOB_HUNTER_EMAIL }}
+        JOB_HUNTER_PHONE: ${{ env.JOB_HUNTER_PHONE }}
+        RESUME_PATH: ${{ env.RESUME_PATH }}
+        DISCORD_WEBHOOK_URL: ${{ env.DISCORD_WEBHOOK_URL }}
+
+    - name: ✅ Validate setup and configuration
+      run: ./gradlew validateSetup --no-daemon --stacktrace
+      env:
+        JOB_HUNTER_NAME: ${{ env.JOB_HUNTER_NAME }}
+        JOB_HUNTER_EMAIL: ${{ env.JOB_HUNTER_EMAIL }}
+        JOB_HUNTER_PHONE: ${{ env.JOB_HUNTER_PHONE }}
+        RESUME_PATH: ${{ env.RESUME_PATH }}
+        DISCORD_WEBHOOK_URL: ${{ env.DISCORD_WEBHOOK_URL }}
 
     - name: 📊 Upload build artifacts
       uses: actions/upload-artifact@v4
+      if: always()
       with:
-        name: build-artifacts
+        name: build-artifacts-${{ github.run_number }}
         path: build/libs/
 
-  # Daily Smart Application Workflow
-  daily-smart-job-search:
-    needs: build-and-validate
+    - name: 📋 Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results-${{ github.run_number }}
+        path: |
+          build/reports/tests/
+          build/test-results/
+
+  # Smart job discovery and application workflow (12-hour schedule)
+  smart-job-discovery:
+    needs: build-and-test
     runs-on: ubuntu-latest
     if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && github.event.inputs.run_type == 'smart_apply')
     
@@ -81,12 +110,12 @@ jobs:
         java-version: ${{ env.JAVA_VERSION }}
         distribution: 'temurin'
 
-    - name: 🐧 Setup Chrome for Selenium
+    - name: 🐧 Setup Chrome for potential browser automation
       uses: browser-actions/setup-chrome@latest
       
-    - name: 🖥️ Setup Xvfb (Virtual Display)
+    - name: 🖥️ Setup Virtual Display (for headless browser)
       run: |
-        sudo apt-get update
+        sudo apt-get update -qq
         sudo apt-get install -y xvfb
         export DISPLAY=:99
         Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
@@ -102,13 +131,14 @@ jobs:
     - name: 🔧 Grant execute permission for gradlew
       run: chmod +x gradlew
 
-    - name: 🏗️ Build application
+    - name: 🏗️ Build application (skip tests for speed)
       run: ./gradlew build -x test --no-daemon
 
-    - name: 🎯 Run Smart Application Workflow
+    - name: 🎯 Run Smart Job Discovery Workflow
       run: |
         export DISPLAY=:99
-        timeout 900s ./gradlew smartApply --no-daemon || echo "Smart workflow completed or timed out"
+        export headless=true
+        timeout 1200s ./gradlew smartApply --no-daemon --stacktrace || echo "Smart workflow completed or timed out (20 min limit)"
       env:
         JOB_HUNTER_NAME: ${{ env.JOB_HUNTER_NAME }}
         JOB_HUNTER_EMAIL: ${{ env.JOB_HUNTER_EMAIL }}
@@ -120,10 +150,11 @@ jobs:
       uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: job-applications-${{ github.run_number }}
+        name: job-discovery-results-${{ github.run_number }}
         path: |
           quick-apply-*.html
           job-applications-*.md
+          *.json
         retention-days: 30
 
     - name: 📢 Send completion notification
@@ -132,12 +163,20 @@ jobs:
         if [ -n "${{ env.DISCORD_WEBHOOK_URL }}" ] && [ "${{ env.DISCORD_WEBHOOK_URL }}" != "bruh" ]; then
           curl -X POST "${{ env.DISCORD_WEBHOOK_URL }}" \
           -H "Content-Type: application/json" \
-          -d "{\"content\": \"🤖 **Daily Job Hunt Complete!**\\n📅 $(date)\\n🔗 Check GitHub Actions for your job application files!\\n\\n*Your Job Hunter Bot is working 24/7 for you!* 🚀\"}"
+          -d "{
+            \"content\": \"🎯 **Smart Job Discovery Complete!** 
+            📅 $(date '+%Y-%m-%d %H:%M UTC')
+            🔍 Fresh job opportunities analyzed and scored
+            📱 Check GitHub Actions artifacts for your personalized job dashboard
+            🚀 *Your AI Job Hunter working every 12 hours!*\",
+            \"username\": \"Job Hunter Bot\",
+            \"avatar_url\": \"https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png\"
+          }"
         fi
 
-  # API-only job search (faster, for testing)
+  # Fast API-only job search (for testing and quick runs)
   api-job-search:
-    needs: build-and-validate
+    needs: build-and-test
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.run_type == 'api_only'
     
@@ -166,7 +205,7 @@ jobs:
       run: ./gradlew build -x test --no-daemon
 
     - name: 🌐 Run API-only Job Search
-      run: timeout 300s ./gradlew runAPIJob --no-daemon || echo "API job search completed"
+      run: timeout 600s ./gradlew runAPIJob --no-daemon --stacktrace || echo "API job search completed (10 min limit)"
       env:
         JOB_HUNTER_NAME: ${{ env.JOB_HUNTER_NAME }}
         JOB_HUNTER_EMAIL: ${{ env.JOB_HUNTER_EMAIL }}
@@ -174,10 +213,10 @@ jobs:
         RESUME_PATH: ${{ env.RESUME_PATH }}
         DISCORD_WEBHOOK_URL: ${{ env.DISCORD_WEBHOOK_URL }}
 
-  # Health check (on every push)
-  health-check:
+  # Setup validation and health check
+  validate-setup:
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.run_type == 'test_setup')
+    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.run_type == 'validate_setup')
     
     steps:
     - name: 📋 Checkout repository
@@ -192,8 +231,14 @@ jobs:
     - name: 🔧 Grant execute permission for gradlew
       run: chmod +x gradlew
 
-    - name: ✅ Health Check
-      run: ./gradlew testSetup --no-daemon
+    - name: 🏗️ Build and validate
+      run: ./gradlew build validateSetup --no-daemon --stacktrace
+      env:
+        JOB_HUNTER_NAME: ${{ env.JOB_HUNTER_NAME }}
+        JOB_HUNTER_EMAIL: ${{ env.JOB_HUNTER_EMAIL }}
+        JOB_HUNTER_PHONE: ${{ env.JOB_HUNTER_PHONE }}
+        RESUME_PATH: ${{ env.RESUME_PATH }}
+        DISCORD_WEBHOOK_URL: ${{ env.DISCORD_WEBHOOK_URL }}
 
     - name: 📢 Health Check Notification
       if: failure()
@@ -201,5 +246,47 @@ jobs:
         if [ -n "${{ env.DISCORD_WEBHOOK_URL }}" ] && [ "${{ env.DISCORD_WEBHOOK_URL }}" != "bruh" ]; then
           curl -X POST "${{ env.DISCORD_WEBHOOK_URL }}" \
           -H "Content-Type: application/json" \
-          -d "{\"content\": \"⚠️ **Job Hunter Bot Health Check Failed**\\n📅 $(date)\\n🔗 Check GitHub Actions for details\\n\\nPlease review the setup.\"}"
+          -d "{
+            \"content\": \"⚠️ **Job Hunter Bot Health Check Failed**
+            📅 $(date '+%Y-%m-%d %H:%M UTC')
+            🔗 Check GitHub Actions for error details
+            🛠️ Please review the setup and configuration\",
+            \"username\": \"Job Hunter Bot - Health Check\"
+          }"
         fi
+
+  # Test-only run (for development)
+  test-only:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.run_type == 'test_only'
+    
+    steps:
+    - name: 📋 Checkout repository
+      uses: actions/checkout@v4
+
+    - name: ☕ Set up JDK ${{ env.JAVA_VERSION }}
+      uses: actions/setup-java@v4
+      with:
+        java-version: ${{ env.JAVA_VERSION }}
+        distribution: 'temurin'
+
+    - name: 🔧 Grant execute permission for gradlew
+      run: chmod +x gradlew
+
+    - name: 🧪 Run comprehensive test suite
+      run: ./gradlew clean test --no-daemon --stacktrace
+      env:
+        JOB_HUNTER_NAME: ${{ env.JOB_HUNTER_NAME }}
+        JOB_HUNTER_EMAIL: ${{ env.JOB_HUNTER_EMAIL }}
+        JOB_HUNTER_PHONE: ${{ env.JOB_HUNTER_PHONE }}
+        RESUME_PATH: ${{ env.RESUME_PATH }}
+        DISCORD_WEBHOOK_URL: ${{ env.DISCORD_WEBHOOK_URL }}
+
+    - name: 📊 Upload detailed test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: comprehensive-test-results-${{ github.run_number }}
+        path: |
+          build/reports/
+          build/test-results/
