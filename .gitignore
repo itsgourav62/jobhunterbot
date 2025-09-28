@@ -37,9 +37,13 @@ target/
 *.sublime-workspace
 *.sublime-project
 *.vscode/
-/.gradle
-.env
-/build/resources/test/.gitkeep
+.gradle/
+.env*
+build/resources/test/.gitkeep
+build/tmp/
+build/generated/
 .gradle/9.1.0/checksums/checksums.lock
 .gradle/9.1.0/executionHistory/executionHistory.lock
-/.gradle/9.1.0
+.gradle/9.1.0/
+build/reports/
+build/test-results/
