@@ -16,41 +16,18 @@ repositories {
 }
 
 dependencies {
-    // Selenium for browser automation
     implementation 'org.seleniumhq.selenium:selenium-java:4.15.0'
-    
-    // WebDriverManager for automatic driver management
-    implementation 'io.github.bonigarcia:webdrivermanager:5.6.2'
-    
-    // Apache Tika for resume parsing (PDF/DOCX extraction)
-    implementation 'org.apache.tika:tika-core:2.9.1'
-    implementation 'org.apache.tika:tika-parsers-standard-package:2.9.1'
-    
-    // Logging
-    implementation 'org.slf4j:slf4j-api:2.0.9'
+    implementation 'com.google.code.gson:gson:2.10.1'
+    implementation 'org.apache.tika:tika-core:2.4.1'
+    implementation 'org.apache.tika:tika-parsers:2.4.1'
     implementation 'org.slf4j:slf4j-simple:2.0.9'
-    
-    // JUnit 5 for testing
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    
-    // Jakarta Mail (for email notifications)
-    implementation 'com.sun.mail:jakarta.mail:2.0.1'
-    
-    // Jackson for JSON parsing (API responses)
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.16.1'
-    
-    // H2 Database for embedded storage
-    implementation 'com.h2database:h2:2.2.224'
-    
-    // HTTP client
-    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
-    
-    // Commons IO for file operations
-    implementation 'commons-io:commons-io:2.15.1'
-    
-    // JSoup for HTML parsing
-    implementation 'org.jsoup:jsoup:1.17.2'
+    implementation 'jakarta.mail:jakarta.mail-api:2.1.2'
+    implementation 'org.eclipse.angus:jakarta.mail:2.0.1'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.0'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.10.0'
 }
 
 test {

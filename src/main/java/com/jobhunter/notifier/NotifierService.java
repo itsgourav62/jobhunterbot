@@ -43,7 +43,7 @@ public class NotifierService {
     }
 
     // Email notification
-    public void sendEmail(String fromEmail, String password, String toEmail, String subject, String body) {
+    public void sendHtmlEmail(String fromEmail, String password, String toEmail, String subject, String htmlBody) {
         Properties props = new Properties();
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.starttls.enable", "true");
@@ -59,10 +59,9 @@ public class NotifierService {
         try {
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(fromEmail));
-            message.setRecipients(
-                    Message.RecipientType.TO, InternetAddress.parse(toEmail));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
             message.setSubject(subject);
-            message.setText(body);
+            message.setContent(htmlBody, "text/html");
 
             Transport.send(message);
             System.out.println("✅ Email sent successfully!");

@@ -1,17 +1,17 @@
 package com.jobhunter;
 
-import com.google.gson.Gson;
 import com.jobhunter.autofill.AutofillService;
 import com.jobhunter.autofill.JobApplicationService;
 import com.jobhunter.config.AppConfig;
 import com.jobhunter.model.Resume;
+import com.jobhunter.parser.ResumeParser;
 import com.jobhunter.storage.H2JobRepository;
 import com.jobhunter.storage.JobRepository;
 import com.jobhunter.workflow.SmartApplicationWorkflow;
 import org.openqa.selenium.WebDriver;
+import org.apache.tika.exception.TikaException;
 
-import java.io.FileReader;
-import java.io.Reader;
+import java.io.IOException;
 
 public class Main {
 
@@ -28,7 +28,7 @@ public class Main {
             AppConfig config = AppConfig.getInstance();
 
             // 2. Load Resume
-            Resume resume = loadResume(config.getResumePath());
+            Resume resume = new ResumeParser().parseFromUrl(config.getResumeUrl());
 
             // 3. Initialize WebDriver
             driver = BrowserFactory.getDriver(config.getBrowser());
@@ -58,9 +58,5 @@ public class Main {
         }
     }
 
-    private static Resume loadResume(String path) throws Exception {
-        try (Reader reader = new FileReader(path)) {
-            return new Gson().fromJson(reader, Resume.class);
-        }
-    }
+
 }

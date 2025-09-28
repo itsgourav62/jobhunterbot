@@ -80,6 +80,7 @@ public class SmartApplicationWorkflow {
                     resume.getName()
             );
             sendSmartNotification(tiers, report, timestamp);
+            sendEmailNotification(tiers, timestamp);
 
             // 7. Console summary
             printApplicationSummary(tiers, report);
@@ -188,11 +189,46 @@ public class SmartApplicationWorkflow {
             message.append(String.format("Analyzed: %d jobs, Avg Score: %.1f%%\n", report.getTotalJobsFetched(), report.getAverageScore()));
             message.append(String.format("🔥 Priority Jobs: %d\n", tiers.priorityJobs.size()));
             if (!tiers.priorityJobs.isEmpty()) {
-                ApplicationJob topJob = tiers.priorityJobs.get(0);
-                message.append(String.format("**Top Job:** %s at %s (%d%%)\n", topJob.job.getTitle(), topJob.job.getCompany(), topJob.score));
+                message.append("\n**Top Priority Jobs:**\n");
+                for (int i = 0; i < Math.min(3, tiers.priorityJobs.size()); i++) {
+                    ApplicationJob topJob = tiers.priorityJobs.get(i);
+                    message.append(String.format("%d. %s at %s (%d%%) - %s\n", i + 1, topJob.job.getTitle(), topJob.job.getCompany(), topJob.score, topJob.job.getUrl()));
+                }
             }
             notifierService.sendDiscordNotification(discordWebhook, message.toString());
         }
+    }
+
+
+    private void sendEmailNotification(ApplicationTiers tiers, String timestamp) {
+        String toEmail = AppConfig.getInstance().getEmailTo();
+        if (toEmail != null && !toEmail.trim().isEmpty()) {
+            String subject = "🎯 Job Application Plan - " + timestamp;
+            String htmlBody = generateEmailHtml(tiers, timestamp);
+            notifierService.sendHtmlEmail(AppConfig.getInstance().getEmailFrom(), AppConfig.getInstance().getEmailPassword(), toEmail, subject, htmlBody);
+        }
+    }
+
+    private String generateEmailHtml(ApplicationTiers tiers, String timestamp) {
+        StringBuilder html = new StringBuilder();
+        html.append("<html><body>");
+        html.append("<h1>Job Application Plan - ").append(timestamp).append("</h1>");
+        if (!tiers.priorityJobs.isEmpty()) {
+            html.append("<h2>🔥 Priority Applications</h2>");
+            for (ApplicationJob job : tiers.priorityJobs) {
+                html.append(String.format("<p><b>%s at %s (%d%%)</b><br><a href=\"%s\">Apply Now</a></p>",
+                        job.job.getTitle(), job.job.getCompany(), job.score, job.job.getUrl()));
+            }
+        }
+        if (!tiers.highPotentialJobs.isEmpty()) {
+            html.append("<h2>⭐ High Potential</h2>");
+            for (ApplicationJob job : tiers.highPotentialJobs) {
+                html.append(String.format("<p><b>%s at %s (%d%%)</b><br><a href=\"%s\">Apply Now</a></p>",
+                        job.job.getTitle(), job.job.getCompany(), job.score, job.job.getUrl()));
+            }
+        }
+        html.append("</body></html>");
+        return html.toString();
     }
 
     private void printApplicationSummary(ApplicationTiers tiers, AnalyticsService.JobSearchReport report) {

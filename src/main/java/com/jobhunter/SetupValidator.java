@@ -55,7 +55,7 @@ public class SetupValidator {
                 String resumePath = config.getResumePath();
                 if (resumePath != null && !resumePath.isEmpty()) {
                     ResumeParser parser = new ResumeParser();
-                    Resume resume = parser.parseResumeFromUrl(resumePath);
+                    Resume resume = parser.parse(resumePath);
                     
                     System.out.println("✅ Resume parsed successfully");
                     System.out.println("   Name: " + resume.getName());

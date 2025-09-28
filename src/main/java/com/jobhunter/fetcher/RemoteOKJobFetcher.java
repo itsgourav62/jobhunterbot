@@ -19,11 +19,10 @@ public class RemoteOKJobFetcher implements ApiJobFetcher {
 
     private static final int MAX_JOBS = 20;
     private final HttpClient httpClient;
-    private final ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public RemoteOKJobFetcher() {
         this.httpClient = HttpClient.newHttpClient();
-        this.objectMapper = new ObjectMapper();
     }
 
     @Override

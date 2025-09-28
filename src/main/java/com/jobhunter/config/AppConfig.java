@@ -32,7 +32,11 @@ public class AppConfig {
     }
 
     public String getResumePath() {
-        return properties.getProperty("resume.path", "resume.json");
+        return properties.getProperty("resume.path", "resume.pdf");
+    }
+
+    public String getResumeUrl() {
+        return properties.getProperty("resume.url", "");
     }
 
     public String getDatabasePath() {
@@ -45,6 +49,18 @@ public class AppConfig {
 
     public String getDiscordWebhookUrl() {
         return properties.getProperty("discord.webhook.url", "");
+    }
+
+    public String getEmailFrom() {
+        return properties.getProperty("email.from", "");
+    }
+
+    public String getEmailPassword() {
+        return properties.getProperty("email.password", "");
+    }
+
+    public String getEmailTo() {
+        return properties.getProperty("email.to", "");
     }
 
     public void cleanup() {

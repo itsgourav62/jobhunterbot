@@ -15,6 +15,9 @@ Add these secrets:
 | `JOB_HUNTER_PHONE` | Your phone | `+91-0748719503` |
 | `RESUME_PATH` | Your resume URL | `https://drive.google.com/uc?id=...` |
 | `DISCORD_WEBHOOK_URL` | Discord webhook | `https://discord.com/api/webhooks/...` |
+| `EMAIL_FROM` | Your email address for sending notifications | `your_email@gmail.com` |
+| `EMAIL_PASSWORD` | App password for your email (for Gmail, generate in Google Account Security) | `your_app_password` |
+| `EMAIL_TO` | Recipient email address for notifications | `recipient_email@example.com` |
 
 ### 2. 🎯 Your Resume URL (Google Drive)
 
