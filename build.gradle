@@ -7,8 +7,8 @@ group = 'com.jobhunter'
 version = '1.0-SNAPSHOT'
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_24
-    targetCompatibility = JavaVersion.VERSION_24
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 repositories {
@@ -30,7 +30,8 @@ dependencies {
     implementation 'org.slf4j:slf4j-simple:2.0.9'
 
     // For testing
-    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.3'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     // Jakarta Mail (for email notifications)
     implementation 'com.sun.mail:jakarta.mail:2.0.1'
@@ -44,7 +45,11 @@ dependencies {
 }
 
 test {
-    enabled = false
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+        exceptionFormat "full"
+    }
 }
 
 // Main application configuration
