@@ -1,47 +1,66 @@
 package com.jobhunter;
 
-import com.jobhunter.autofill.BrowserSetup;
-import com.jobhunter.cron.SchedulerService;
+import com.google.gson.Gson;
+import com.jobhunter.autofill.AutofillService;
+import com.jobhunter.autofill.JobApplicationService;
+import com.jobhunter.config.AppConfig;
 import com.jobhunter.model.Resume;
+import com.jobhunter.storage.H2JobRepository;
+import com.jobhunter.storage.JobRepository;
+import com.jobhunter.workflow.SmartApplicationWorkflow;
 import org.openqa.selenium.WebDriver;
 
-import java.util.Arrays;
-import java.util.Collections;
+import java.io.FileReader;
+import java.io.Reader;
 
 public class Main {
+
     public static void main(String[] args) {
         System.out.println("====================================");
-        System.out.println("🦁 Job Hunter Bot v1.0");
+        System.out.println("🦁 Job Hunter Bot v2.0");
         System.out.println("====================================");
 
-        SchedulerService scheduler = null;
+        WebDriver driver = null;
+        JobRepository jobRepository = null;
+
         try {
-            // Create a dummy resume
-            Resume resume = new Resume(
-                    "Gourav",
-                    "gourav@example.com",
-                    "1234567890",
-                    Arrays.asList("Java", "Spring", "SQL", "React"),
-                    Collections.singletonList("5 years of experience in software development."),
-                    Collections.singletonList("Bachelor's in Computer Science")
-            );
+            // 1. Load Configuration
+            AppConfig config = AppConfig.getInstance();
 
-            // Get the WebDriver
-            WebDriver driver = BrowserSetup.getBraveDriver();
+            // 2. Load Resume
+            Resume resume = loadResume(config.getResumePath());
 
-            // Start the scheduler service
-            scheduler = new SchedulerService(resume, driver);
-            scheduler.runDailyJob();
+            // 3. Initialize WebDriver
+            driver = BrowserFactory.getDriver(config.getBrowser());
+
+            // 4. Initialize Services
+            jobRepository = new H2JobRepository(config.getDatabasePath());
+            AutofillService autofillService = new AutofillService(driver);
+            JobApplicationService jobApplicationService = new JobApplicationService(autofillService, jobRepository, config.getResumePath());
+
+            // 5. Start the Workflow
+            SmartApplicationWorkflow workflow = new SmartApplicationWorkflow(resume, jobApplicationService, config.getOutputDir(), driver);
+            workflow.run();
 
         } catch (Exception e) {
-            System.out.println("\n❌ An unexpected error occurred in the main application:");
+            System.err.println("\n❌ A critical error occurred in the main application:");
             e.printStackTrace();
         } finally {
-            if (scheduler != null) {
-                scheduler.close();
-                System.out.println("✅ Application finished and browser closed.");
+            // 6. Cleanup
+            if (driver != null) {
+                driver.quit();
             }
+            if (jobRepository != null) {
+                jobRepository.close();
+            }
+            System.out.println("\n✅ Application finished and resources are closed.");
             System.out.println("====================================");
+        }
+    }
+
+    private static Resume loadResume(String path) throws Exception {
+        try (Reader reader = new FileReader(path)) {
+            return new Gson().fromJson(reader, Resume.class);
         }
     }
 }

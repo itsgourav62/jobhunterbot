@@ -1,6 +1,8 @@
 package com.jobhunter.fetcher;
 
 import com.jobhunter.model.Job;
+import org.openqa.selenium.WebDriver;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -35,7 +37,7 @@ public class MockJobFetcher implements JobFetcher {
     };
 
     @Override
-    public List<Job> fetchJobs(List<String> skills) {
+    public List<Job> fetchJobs(List<String> skills, WebDriver driver) {
         List<Job> jobs = new ArrayList<>();
         
         System.out.println("🧪 Generating " + MAX_JOBS + " mock jobs for testing...");

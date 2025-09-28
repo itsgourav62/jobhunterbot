@@ -1,7 +1,6 @@
 package com.jobhunter.fetcher;
 
 import com.jobhunter.model.Job;
-import com.jobhunter.config.AppConfig;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -21,8 +20,7 @@ public class ShineJobFetcher implements JobFetcher {
     private static final int MAX_JOBS = 15;
 
     @Override
-    public List<Job> fetchJobs(List<String> skills) {
-        WebDriver driver = AppConfig.getInstance().getDriver();
+    public List<Job> fetchJobs(List<String> skills, WebDriver driver) {
         List<Job> jobs = new ArrayList<>();
 
         try {

@@ -1,83 +1,73 @@
 package com.jobhunter.storage;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class H2JobRepository implements JobRepository {
 
-    private static final String DB_URL = "jdbc:h2:./jobhunter_db"; // file-based DB
-    private static final String USER = "sa";
-    private static final String PASS = "";
+    private final Connection connection;
 
-    public H2JobRepository() {
-        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
-             Statement stmt = conn.createStatement()) {
-            // Create table if not exists
-            String sql = "CREATE TABLE IF NOT EXISTS applied_jobs (" +
-                    "job_id VARCHAR(255) PRIMARY KEY, " +
-                    "title VARCHAR(255), " +
-                    "company VARCHAR(255), " +
-                    "url VARCHAR(512), " +
-                    "applied_at TIMESTAMP)";
-            stmt.execute(sql);
-        } catch (SQLException e) {
-            e.printStackTrace();
+    public H2JobRepository(String dbPath) {
+        try {
+            Class.forName("org.h2.Driver");
+            connection = DriverManager.getConnection("jdbc:h2:" + dbPath, "sa", "");
+            createTableIfNotExists();
+        } catch (ClassNotFoundException | SQLException e) {
+            throw new RuntimeException("Failed to initialize H2 database", e);
+        }
+    }
+
+    private void createTableIfNotExists() throws SQLException {
+        String sql = "CREATE TABLE IF NOT EXISTS applied_jobs (" +
+                     "id INT AUTO_INCREMENT PRIMARY KEY," +
+                     "url VARCHAR(255) NOT NULL UNIQUE," +
+                     "title VARCHAR(255)," +
+                     "company VARCHAR(255)," +
+                     "applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
+                     ");";
+        try (Statement statement = connection.createStatement()) {
+            statement.execute(sql);
         }
     }
 
     @Override
-    public void save(AppliedJob job) {
-        String sql = "MERGE INTO applied_jobs KEY(job_id) VALUES (?, ?, ?, ?, ?)";
-        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, job.getJobId());
-            pstmt.setString(2, job.getTitle());
-            pstmt.setString(3, job.getCompany());
-            pstmt.setString(4, job.getUrl());
-            pstmt.setTimestamp(5, Timestamp.valueOf(job.getAppliedAt()));
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public boolean isAlreadyApplied(String jobId) {
-        String sql = "SELECT COUNT(*) FROM applied_jobs WHERE job_id = ?";
-        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, jobId);
-            ResultSet rs = pstmt.executeQuery();
-            if (rs.next()) {
-                return rs.getInt(1) > 0;
+    public boolean hasApplied(String url) {
+        String sql = "SELECT COUNT(*) FROM applied_jobs WHERE url = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, url);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Error checking if job has been applied: " + e.getMessage());
         }
         return false;
     }
 
     @Override
-    public List<AppliedJob> getAllAppliedJobs() {
-        List<AppliedJob> jobs = new ArrayList<>();
-        String sql = "SELECT * FROM applied_jobs";
-        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
-            while (rs.next()) {
-                AppliedJob job = new AppliedJob(
-                        rs.getString("job_id"),
-                        rs.getString("title"),
-                        rs.getString("company"),
-                        rs.getString("url"),
-                        rs.getTimestamp("applied_at").toLocalDateTime()
-                );
-                jobs.add(job);
+    public void markAsApplied(String url, String title, String company) {
+        String sql = "INSERT INTO applied_jobs (url, title, company) VALUES (?, ?, ?)";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, url);
+            ps.setString(2, title);
+            ps.setString(3, company);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            if (!e.getSQLState().equals("23505")) { // Ignore unique constraint violation
+                System.err.println("Error marking job as applied: " + e.getMessage());
+            }
+        }
+    }
+
+    @Override
+    public void close() {
+        try {
+            if (connection != null && !connection.isClosed()) {
+                connection.close();
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Error closing database connection: " + e.getMessage());
         }
-        return jobs;
     }
 }

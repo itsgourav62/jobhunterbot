@@ -1,5 +1,7 @@
 package com.jobhunter.fetcher;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jobhunter.model.Job;
 
 import java.net.URI;
@@ -8,14 +10,12 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * RemoteOK API-based job fetcher (no scraping, uses their API)
  * Good for remote jobs - API friendly!
  */
-public class RemoteOKJobFetcher implements JobFetcher {
+public class RemoteOKJobFetcher implements ApiJobFetcher {
 
     private static final int MAX_JOBS = 20;
     private final HttpClient httpClient;

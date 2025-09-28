@@ -52,7 +52,7 @@ public class SetupValidator {
             // Test resume parsing
             System.out.println("\n📄 Resume Parsing Test:");
             try {
-                String resumePath = config.getResumeUrl();
+                String resumePath = config.getResumePath();
                 if (resumePath != null && !resumePath.isEmpty()) {
                     ResumeParser parser = new ResumeParser();
                     Resume resume = parser.parseResumeFromUrl(resumePath);

@@ -43,10 +43,10 @@ public class APIJobRunner {
             System.out.println("👤 Using profile: " + resume.getName() + " (" + resume.getEmail() + ")");
             
             // Validate resume access
-            if (!AppConfig.getInstance().validateResumeAccess()) {
-                System.out.println("⚠️ Resume file not accessible - continuing without file upload capability");
-                System.out.println("💡 Raw resume path: " + AppConfig.getInstance().getResumeUrl());
-                System.out.println("💡 Make sure your Google Drive link is publicly accessible");
+            if (AppConfig.getInstance().getResumePath().isEmpty()) {
+                System.out.println("❌ Resume path is not configured in config.properties.");
+                System.out.println("💡 Raw resume path: " + AppConfig.getInstance().getResumePath());
+                return;
             }
 
             // Initialize factory and matcher
@@ -55,7 +55,7 @@ public class APIJobRunner {
 
             // 1️⃣ Fetch jobs from API sources only (fast & reliable)
             System.out.println("🚀 Fetching jobs from API sources...");
-            List<Job> jobs = jobFetcherFactory.fetchJobsFromAPIs(resume.getSkills());
+            List<Job> jobs = jobFetcherFactory.fetchAllJobs(resume.getSkills(), null);
             System.out.println("📊 Total jobs fetched: " + jobs.size());
 
             if (jobs.isEmpty()) {

@@ -1,0 +1,25 @@
+{
+  "name": "Gourav Shaw",
+  "email": "shawgourav62@gmail.com",
+  "phone": "+91-9748719503",
+  "skills": [
+    "Java",
+    "Spring Boot",
+    "React",
+    "Python",
+    "Node.js",
+    "SQL",
+    "Docker",
+    "Kubernetes",
+    "Microservices",
+    "JavaScript"
+  ],
+  "experience": [
+    "5+ years of full-stack development",
+    "System architecture design",
+    "Team leadership experience"
+  ],
+  "education": [
+    "Bachelor's in Computer Science"
+  ]
+}

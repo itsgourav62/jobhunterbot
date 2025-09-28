@@ -1,6 +1,7 @@
 package com.jobhunter.testing;
 
 import com.jobhunter.fetcher.*;
+import com.jobhunter.BrowserFactory;
 import com.jobhunter.config.AppConfig;
 import org.openqa.selenium.WebDriver;
 
@@ -50,7 +51,7 @@ public class ScrapingRealityCheck {
         
         // Cleanup
         try {
-            WebDriver driver = AppConfig.getInstance().getDriver();
+            WebDriver driver = BrowserFactory.getDriver("chrome");
             if (driver != null) {
                 driver.quit();
             }

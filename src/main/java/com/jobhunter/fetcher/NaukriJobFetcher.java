@@ -1,7 +1,6 @@
 package com.jobhunter.fetcher;
 
 import com.jobhunter.model.Job;
-import com.jobhunter.config.AppConfig;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -18,8 +17,7 @@ public class NaukriJobFetcher implements JobFetcher {
     private static final int MAX_JOBS = 20; // Limit number of jobs to scrape
 
     @Override
-    public List<Job> fetchJobs(List<String> skills) {
-        WebDriver driver = AppConfig.getInstance().getDriver();
+    public List<Job> fetchJobs(List<String> skills, WebDriver driver) {
         List<Job> jobs = new ArrayList<>();
 
         try {
@@ -28,27 +26,29 @@ public class NaukriJobFetcher implements JobFetcher {
             String searchUrl = "https://www.naukri.com/jobs?q=" + query + "&l=India";
             driver.get(searchUrl);
 
+            Thread.sleep(5000); // Wait for the page to load
+
             WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-            wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".jobTuple")));
+            wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("div.list")));
 
             // Scroll to load more jobs dynamically
             JavascriptExecutor js = (JavascriptExecutor) driver;
             int totalJobsScraped = 0;
             while (totalJobsScraped < MAX_JOBS) {
-                List<WebElement> jobElements = driver.findElements(By.cssSelector(".jobTuple"));
+                List<WebElement> jobElements = driver.findElements(By.cssSelector("article.job-tuple"));
 
                 for (WebElement el : jobElements) {
                     if (totalJobsScraped >= MAX_JOBS) break;
 
                     try {
-                        String title = el.findElement(By.cssSelector(".job-title")).getText();
-                        String company = el.findElement(By.cssSelector(".companyName")).getText();
-                        String link = el.findElement(By.cssSelector("a")).getAttribute("href");
+                        String title = el.findElement(By.cssSelector("a.title")).getText();
+                        String company = el.findElement(By.cssSelector("a.subTitle")).getText();
+                        String link = el.findElement(By.cssSelector("a.title")).getAttribute("href");
 
                         // Some pages have short descriptions; else use empty string
                         String description = "";
                         try {
-                            description = el.findElement(By.cssSelector(".job-description")).getText();
+                            description = el.findElement(By.cssSelector("div.job-description")).getText();
                         } catch (Exception ignored) {}
 
                         jobs.add(new Job("job" + (totalJobsScraped + 1), title, description, link, company));
