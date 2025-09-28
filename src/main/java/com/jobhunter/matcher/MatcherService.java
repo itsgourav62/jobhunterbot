@@ -33,8 +33,8 @@ public class MatcherService {
      */
     public int matchJob(Job job, Resume resume) {
         int totalScore = 0;
-        String jobTitle = job.getTitle().toLowerCase();
-        String jobDescription = job.getDescription().toLowerCase();
+        String jobTitle = job.getTitle() != null ? job.getTitle().toLowerCase() : "";
+        String jobDescription = job.getDescription() != null ? job.getDescription().toLowerCase() : "";
         String combinedJobText = (jobTitle + " " + jobDescription).toLowerCase();
 
         // 1️⃣ Skill matching (60% weight)

@@ -86,7 +86,7 @@ public class SmartApplicationWorkflow {
             if (jobFetcherFactory != null) {
                 jobFetcherFactory.shutdown();
             }
-            AppConfig.cleanup();
+            AppConfig.getInstance().cleanup();
         }
     }
 
@@ -243,7 +243,7 @@ public class SmartApplicationWorkflow {
 
     private static void sendSmartNotification(NotifierService notifier, ApplicationTiers tiers, 
                                             AnalyticsService.JobSearchReport report, String timestamp) {
-        String discordWebhook = AppConfig.getDiscordWebhookUrl();
+        String discordWebhook = AppConfig.getInstance().getDiscordWebhookUrl();
         if (discordWebhook != null && !discordWebhook.equals("bruh") && !discordWebhook.isEmpty()) {
             
             StringBuilder message = new StringBuilder();

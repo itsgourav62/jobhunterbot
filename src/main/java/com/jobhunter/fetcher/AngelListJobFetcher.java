@@ -22,7 +22,7 @@ public class AngelListJobFetcher implements JobFetcher {
 
     @Override
     public List<Job> fetchJobs(List<String> skills) {
-        WebDriver driver = AppConfig.getDriver();
+        WebDriver driver = AppConfig.getInstance().getDriver();
         List<Job> jobs = new ArrayList<>();
 
         try {

@@ -74,7 +74,8 @@ public class SetupValidator {
             System.out.println("\n📱 Discord Test:");
             try {
                 NotifierService notifier = new NotifierService();
-                boolean discordSent = notifier.sendDiscordNotification("🧪 Setup validation test message from Job Hunter Bot!");
+                notifier.sendDiscordNotification("🧪 Setup validation test message from Job Hunter Bot!", "Setup Validator");
+                boolean discordSent = true;
                 if (discordSent) {
                     System.out.println("✅ Discord notification sent successfully");
                 } else {

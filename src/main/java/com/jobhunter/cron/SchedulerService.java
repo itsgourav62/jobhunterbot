@@ -64,7 +64,7 @@ public class SchedulerService {
                         "name", resume.getName(),
                         "email", resume.getEmail(),
                         "phone", resume.getPhone()
-                ), AppConfig.getResumePath());
+                ), AppConfig.getInstance().getResumePath());
                 
                 appliedCount++;
                 Thread.sleep(5000); // 5-second delay between applications

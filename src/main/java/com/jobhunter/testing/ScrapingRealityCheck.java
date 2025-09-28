@@ -50,7 +50,7 @@ public class ScrapingRealityCheck {
         
         // Cleanup
         try {
-            WebDriver driver = AppConfig.getDriver();
+            WebDriver driver = AppConfig.getInstance().getDriver();
             if (driver != null) {
                 driver.quit();
             }

@@ -43,9 +43,9 @@ public class APIJobRunner {
             System.out.println("👤 Using profile: " + resume.getName() + " (" + resume.getEmail() + ")");
             
             // Validate resume access
-            if (!AppConfig.validateResumeAccess()) {
+            if (!AppConfig.getInstance().validateResumeAccess()) {
                 System.out.println("⚠️ Resume file not accessible - continuing without file upload capability");
-                System.out.println("💡 Raw resume path: " + AppConfig.getRawResumePath());
+                System.out.println("💡 Raw resume path: " + AppConfig.getInstance().getResumeUrl());
                 System.out.println("💡 Make sure your Google Drive link is publicly accessible");
             }
 
@@ -101,7 +101,7 @@ public class APIJobRunner {
                 }
 
                 // 5️⃣ Send enhanced notification with analytics
-                String discordWebhook = AppConfig.getDiscordWebhookUrl();
+                String discordWebhook = AppConfig.getInstance().getDiscordWebhookUrl();
                 if (discordWebhook != null && !discordWebhook.equals("bruh") && !discordWebhook.isEmpty()) {
                     System.out.println("\n📢 Sending Discord notification with analytics...");
                     String discordReport = analyticsReport.generateDiscordReport();
@@ -119,7 +119,7 @@ public class APIJobRunner {
                 System.out.println("😔 No jobs matched your criteria (score >= " + threshold + ")");
                 
                 // Send notification about no matches with basic analytics
-                String discordWebhook = AppConfig.getDiscordWebhookUrl();
+                String discordWebhook = AppConfig.getInstance().getDiscordWebhookUrl();
                 if (discordWebhook != null && !discordWebhook.equals("bruh") && !discordWebhook.isEmpty()) {
                     String message = "🤖 Job Hunter API Run - " + java.time.LocalDate.now() + 
                         "\n📊 " + jobs.size() + " jobs fetched, but none matched criteria (score >= " + threshold + ")" +
@@ -133,7 +133,7 @@ public class APIJobRunner {
             e.printStackTrace();
             
             // Send error notification
-            String discordWebhook = AppConfig.getDiscordWebhookUrl();
+            String discordWebhook = AppConfig.getInstance().getDiscordWebhookUrl();
             if (discordWebhook != null && !discordWebhook.equals("bruh")) {
                 notifier.sendDiscordNotification(discordWebhook, 
                     "❌ Job Hunter API Run Failed - " + java.time.LocalDate.now() + 
@@ -144,7 +144,7 @@ public class APIJobRunner {
             if (jobFetcherFactory != null) {
                 jobFetcherFactory.shutdown();
             }
-            AppConfig.cleanup(); // Clean up temp files and resources
+            AppConfig.getInstance().cleanup(); // Clean up temp files and resources
             System.out.println("✅ API Job Runner finished.");
             System.out.println("====================================");
         }
