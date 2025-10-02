@@ -18,6 +18,12 @@ public class AppConfig {
             // If config.properties is not found, use default values
             System.out.println("config.properties not found, using default values.");
         }
+
+        // Override properties with environment variables if set
+        System.getenv().forEach((key, value) -> {
+            String propKey = key.toLowerCase().replace("_", ".");
+            properties.setProperty(propKey, value); // Always set, overriding if exists
+        });
     }
 
     public static synchronized AppConfig getInstance() {
@@ -27,12 +33,26 @@ public class AppConfig {
         return instance;
     }
 
+    public String getJobHunterName() {
+        return properties.getProperty("job.hunter.name", "");
+    }
+
+    public String getJobHunterEmail() {
+        return properties.getProperty("job.hunter.email", "");
+    }
+
     public String getBrowser() {
         return properties.getProperty("browser", "chrome");
     }
 
+    public void setProperty(String key, String value) {
+        if (value != null) {
+            properties.setProperty(key, value);
+        }
+    }
+
     public String getResumePath() {
-        return properties.getProperty("resume.path", "resume.pdf");
+        return properties.getProperty("resume.url", "");
     }
 
     public String getResumeUrl() {
