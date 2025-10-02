@@ -57,8 +57,20 @@ Once you've added the secrets:
 
 ## 🚀 Test Your Setup
 
-To test immediately:
+Once you've added the secrets, you can test it in several ways:
+
+### Option 1: Manual Test (Recommended)
 1. Go to Actions → "Job Hunter Bot" → "Run workflow"
-2. Select "smart_apply" from the dropdown
+2. Select **"test_job_search"** from the dropdown
 3. Click "Run workflow"
 4. Check Discord for notifications and GitHub artifacts for job reports
+
+### Option 2: Full Smart Apply Test
+1. Go to Actions → "Job Hunter Bot" → "Run workflow"
+2. Select **"smart_apply"** from the dropdown
+3. Click "Run workflow"
+4. This runs the complete job application workflow
+
+### Option 3: Automatic Schedule
+- The job search runs automatically every 12 hours (6 AM & 6 PM UTC)
+- No manual intervention needed
