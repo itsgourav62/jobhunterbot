@@ -299,15 +299,28 @@ public class SmartApplicationWorkflow {
                 com.jobhunter.parser.ResumeParser parser = new com.jobhunter.parser.ResumeParser();
                 String resumeUrl = config.getResumeUrl();
                 if (resumeUrl != null && !resumeUrl.isEmpty()) {
+                    System.out.println("📄 Attempting to parse resume from: " + resumeUrl);
                     resume = parser.parseFromUrl(resumeUrl);
+                    System.out.println("✅ Resume parsed successfully");
                 } else {
-                    // Fallback resume for CI/CD testing
+                    System.out.println("⚠️ No resume URL configured, using fallback profile");
                     resume = createFallbackResume(config);
                 }
             } catch (Exception e) {
-                System.out.println("⚠️ Could not parse resume, using fallback profile: " + e.getMessage());
+                System.out.println("⚠️ Resume parsing failed: " + e.getMessage());
+                System.out.println("🔄 Using fallback profile with configured information");
                 resume = createFallbackResume(config);
             }
+            
+            // Ensure resume has the configured information even after parsing
+            if (resume.getName() == null || resume.getName().isEmpty()) {
+                resume.setName(config.getJobHunterName());
+            }
+            if (resume.getEmail() == null || resume.getEmail().isEmpty()) {
+                resume.setEmail(config.getJobHunterEmail());
+            }
+            
+            System.out.println("✅ Final resume profile: " + resume.getName() + " (" + resume.getEmail() + ")");
             
             // Create browser factory and get driver (headless for CI/CD)
             WebDriver driver = null;
