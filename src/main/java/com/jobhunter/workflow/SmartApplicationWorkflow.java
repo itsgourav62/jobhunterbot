@@ -1,6 +1,7 @@
 package com.jobhunter.workflow;
 
 import com.jobhunter.analytics.AnalyticsService;
+import com.jobhunter.autofill.AutofillService;
 import com.jobhunter.autofill.JobApplicationService;
 import com.jobhunter.config.AppConfig;
 import com.jobhunter.fetcher.JobFetcherFactory;
@@ -259,5 +260,111 @@ public class SmartApplicationWorkflow {
         }
 
         public Job getJob() { return job; }
+    }
+
+    /**
+     * Main method for running the Smart Application Workflow from command line or CI/CD
+     */
+    public static void main(String[] args) {
+        System.out.println("🚀 Starting Smart Job Application Workflow...");
+        
+        try {
+            // Initialize configuration
+            AppConfig config = AppConfig.getInstance();
+            
+            // Create output directory
+            String outputDir = "output";
+            
+            // Parse resume - use a fallback for CI/CD environments
+            Resume resume;
+            try {
+                com.jobhunter.parser.ResumeParser parser = new com.jobhunter.parser.ResumeParser();
+                String resumeUrl = config.getResumeUrl();
+                if (resumeUrl != null && !resumeUrl.isEmpty()) {
+                    resume = parser.parseFromUrl(resumeUrl);
+                } else {
+                    // Fallback resume for CI/CD testing
+                    resume = createFallbackResume(config);
+                }
+            } catch (Exception e) {
+                System.out.println("⚠️ Could not parse resume, using fallback profile: " + e.getMessage());
+                resume = createFallbackResume(config);
+            }
+            
+            // Create browser factory and get driver (headless for CI/CD)
+            WebDriver driver = null;
+            
+            try {
+                // Check if we're in a headless environment
+                boolean isHeadless = System.getenv("headless") != null || System.getenv("CI") != null || System.getenv("GITHUB_ACTIONS") != null;
+                
+                if (isHeadless) {
+                    // Create headless Chrome driver for CI/CD
+                    org.openqa.selenium.chrome.ChromeOptions options = new org.openqa.selenium.chrome.ChromeOptions();
+                    options.addArguments("--headless=new");
+                    options.addArguments("--no-sandbox");
+                    options.addArguments("--disable-dev-shm-usage");
+                    options.addArguments("--disable-gpu");
+                    options.addArguments("--remote-debugging-port=9222");
+                    options.addArguments("--window-size=1920,1080");
+                    driver = new org.openqa.selenium.chrome.ChromeDriver(options);
+                } else {
+                    driver = com.jobhunter.BrowserFactory.getDriver("chrome");
+                }
+                
+                // Initialize required services
+                AutofillService autofillService = new AutofillService(driver);
+                com.jobhunter.storage.JobRepository jobRepository = new com.jobhunter.storage.H2JobRepository("./jobhunter_db");
+                String resumePath = config.getResumePath() != null ? config.getResumePath() : "resume.pdf";
+                
+                JobApplicationService jobApplicationService = new JobApplicationService(autofillService, jobRepository, resumePath);
+                
+                // Create and run workflow
+                SmartApplicationWorkflow workflow = new SmartApplicationWorkflow(resume, jobApplicationService, outputDir, driver);
+                workflow.run();
+                
+                System.out.println("✅ Smart Application Workflow completed successfully!");
+                
+            } finally {
+                if (driver != null) {
+                    try {
+                        driver.quit();
+                    } catch (Exception e) {
+                        System.err.println("Warning: Error closing driver: " + e.getMessage());
+                    }
+                }
+            }
+            
+        } catch (Exception e) {
+            System.err.println("❌ Smart Application Workflow failed: " + e.getMessage());
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+    
+    /**
+     * Creates a fallback resume for CI/CD environments where resume parsing might fail
+     */
+    private static Resume createFallbackResume(AppConfig config) {
+        Resume resume = new Resume();
+        
+        // Use config values if available, otherwise use defaults
+        String name = config.getJobHunterName();
+        String email = config.getJobHunterEmail();
+        
+        resume.setName(name != null && !name.isEmpty() ? name : "Job Hunter");
+        resume.setEmail(email != null && !email.isEmpty() ? email : "jobhunter@example.com");
+        
+        // Add some default skills for job matching
+        resume.getSkills().add("Java");
+        resume.getSkills().add("Software Engineering");
+        resume.getSkills().add("Backend Development");
+        resume.getSkills().add("API Development");
+        resume.getSkills().add("Database");
+        resume.getSkills().add("Spring Boot");
+        resume.getSkills().add("REST API");
+        resume.getSkills().add("Microservices");
+        
+        return resume;
     }
 }
