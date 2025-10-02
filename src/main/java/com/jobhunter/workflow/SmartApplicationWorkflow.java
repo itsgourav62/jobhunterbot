@@ -283,6 +283,13 @@ public class SmartApplicationWorkflow {
             // Initialize configuration
             AppConfig config = AppConfig.getInstance();
             
+            // Debug configuration loading
+            System.out.println("🔧 Configuration loaded:");
+            System.out.println("   - Name: '" + config.getJobHunterName() + "'");
+            System.out.println("   - Email: '" + config.getJobHunterEmail() + "'");
+            System.out.println("   - Resume Path: '" + config.getResumePath() + "'");
+            System.out.println("   - Discord Webhook: " + (config.getDiscordWebhookUrl().isEmpty() ? "Not configured" : "Configured"));
+            
             // Create output directory
             String outputDir = "output";
             

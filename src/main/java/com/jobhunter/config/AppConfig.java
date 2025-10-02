@@ -12,18 +12,38 @@ public class AppConfig {
     private final Properties properties = new Properties();
 
     private AppConfig() {
+        // Load from config.properties first
         try (InputStream input = new FileInputStream("config.properties")) {
             properties.load(input);
         } catch (IOException ex) {
-            // If config.properties is not found, use default values
             System.out.println("config.properties not found, using default values.");
         }
+
+        // Load from .env file if it exists
+        loadDotEnvFile();
 
         // Override properties with environment variables if set
         System.getenv().forEach((key, value) -> {
             String propKey = key.toLowerCase().replace("_", ".");
             properties.setProperty(propKey, value); // Always set, overriding if exists
         });
+    }
+
+    private void loadDotEnvFile() {
+        try (InputStream input = new FileInputStream(".env")) {
+            Properties envProps = new Properties();
+            envProps.load(input);
+            
+            // Convert .env properties to our format
+            envProps.forEach((key, value) -> {
+                String propKey = key.toString().toLowerCase().replace("_", ".");
+                properties.setProperty(propKey, value.toString());
+            });
+            
+            System.out.println("✅ Loaded configuration from .env file");
+        } catch (IOException ex) {
+            System.out.println("⚠️ .env file not found, using config.properties and environment variables only.");
+        }
     }
 
     public static synchronized AppConfig getInstance() {
@@ -52,11 +72,16 @@ public class AppConfig {
     }
 
     public String getResumePath() {
-        return properties.getProperty("resume.url", "");
+        // Try both RESUME_PATH (.env format) and resume.url (config.properties format)
+        String resumePath = properties.getProperty("resume.path", "");
+        if (resumePath.isEmpty()) {
+            resumePath = properties.getProperty("resume.url", "");
+        }
+        return resumePath;
     }
 
     public String getResumeUrl() {
-        return properties.getProperty("resume.url", "");
+        return getResumePath(); // Same as resume path
     }
 
     public String getDatabasePath() {

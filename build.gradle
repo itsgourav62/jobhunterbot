@@ -24,6 +24,7 @@ dependencies {
     implementation 'jakarta.mail:jakarta.mail-api:2.1.2'
     implementation 'org.eclipse.angus:jakarta.mail:2.0.1'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.0'
+    implementation 'com.h2database:h2:2.2.224'
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
