@@ -28,6 +28,9 @@ env:
   JOB_HUNTER_PHONE: ${{ secrets.JOB_HUNTER_PHONE }}
   RESUME_PATH: ${{ secrets.RESUME_PATH }}
   DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+  EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+  EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+  EMAIL_TO: ${{ secrets.EMAIL_TO }}
 
 jobs:
   # Build and test validation
