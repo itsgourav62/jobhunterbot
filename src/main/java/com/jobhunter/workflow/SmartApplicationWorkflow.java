@@ -57,6 +57,17 @@ public class SmartApplicationWorkflow {
             System.out.println("\n🔍 Collecting jobs...");
             List<Job> allJobs = jobFetcherFactory.fetchAllJobs(resume.getSkills(), driver);
             System.out.println("📊 Total jobs collected: " + allJobs.size());
+            
+            // Debug: Show first few jobs
+            if (!allJobs.isEmpty()) {
+                System.out.println("📋 Sample jobs found:");
+                for (int i = 0; i < Math.min(3, allJobs.size()); i++) {
+                    Job job = allJobs.get(i);
+                    System.out.println("   " + (i+1) + ". " + job.getTitle() + " at " + job.getCompany());
+                }
+            } else {
+                System.out.println("⚠️ No jobs were fetched! This might indicate an issue with job fetchers.");
+            }
 
             // 2. Match jobs
             System.out.println("\n🧠 Analyzing job compatibility...");
@@ -355,15 +366,32 @@ public class SmartApplicationWorkflow {
         resume.setName(name != null && !name.isEmpty() ? name : "Job Hunter");
         resume.setEmail(email != null && !email.isEmpty() ? email : "jobhunter@example.com");
         
-        // Add some default skills for job matching
+        // Add comprehensive skills for better job matching
         resume.getSkills().add("Java");
+        resume.getSkills().add("Spring Boot");
         resume.getSkills().add("Software Engineering");
         resume.getSkills().add("Backend Development");
         resume.getSkills().add("API Development");
         resume.getSkills().add("Database");
-        resume.getSkills().add("Spring Boot");
         resume.getSkills().add("REST API");
         resume.getSkills().add("Microservices");
+        resume.getSkills().add("JavaScript");
+        resume.getSkills().add("Python");
+        resume.getSkills().add("React");
+        resume.getSkills().add("Node.js");
+        resume.getSkills().add("SQL");
+        resume.getSkills().add("MongoDB");
+        resume.getSkills().add("Docker");
+        resume.getSkills().add("Kubernetes");
+        resume.getSkills().add("AWS");
+        resume.getSkills().add("Git");
+        resume.getSkills().add("DevOps");
+        resume.getSkills().add("Full Stack");
+        resume.getSkills().add("Frontend");
+        resume.getSkills().add("Machine Learning");
+        resume.getSkills().add("Data Science");
+        
+        System.out.println("🔄 Using fallback resume with " + resume.getSkills().size() + " skills for better job matching");
         
         return resume;
     }

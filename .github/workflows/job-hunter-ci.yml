@@ -20,6 +20,7 @@ on:
         - api_only
         - validate_setup
         - test_only
+        - test_job_search
 
 env:
   JAVA_VERSION: 21
@@ -101,7 +102,7 @@ jobs:
   smart-job-discovery:
     needs: build-and-test
     runs-on: ubuntu-latest
-    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && github.event.inputs.run_type == 'smart_apply')
+    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && (github.event.inputs.run_type == 'smart_apply' || github.event.inputs.run_type == 'test_job_search'))
     
     steps:
     - name: 📋 Checkout repository
