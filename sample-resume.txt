@@ -1,0 +1,14 @@
+John Doe
+Software Engineer
+
+A Java developer with 5+ years of experience in building scalable backend services.
+
+Skills:
+- Java, Spring Boot
+- SQL (PostgreSQL)
+- Docker
+- AWS (EC2, S3)
+
+Experience:
+- Senior Engineer at Tech Solutions (2020-Present)
+- Developer at Code Crafters (2018-2020)
