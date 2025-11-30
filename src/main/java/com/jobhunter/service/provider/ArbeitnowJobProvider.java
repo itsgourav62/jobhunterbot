@@ -19,7 +19,7 @@ public class ArbeitnowJobProvider implements JobProvider {
     private final WebClient webClient;
 
     public ArbeitnowJobProvider(WebClient.Builder webClientBuilder,
-                                @Value("${job.provider.arbeitnow.url}") String apiUrl) { // e.g. https://www.arbeitnow.com
+                                @Value("${job.provider.arbeitnow.url}") String apiUrl) {
         this.webClient = webClientBuilder
                 .baseUrl(apiUrl)
                 // increase buffer so large JSON doesn't blow up with DataBufferLimitException

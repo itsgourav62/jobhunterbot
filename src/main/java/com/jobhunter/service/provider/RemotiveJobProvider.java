@@ -17,7 +17,7 @@ public class RemotiveJobProvider implements JobProvider {
     private final WebClient webClient;
 
     public RemotiveJobProvider(WebClient.Builder webClientBuilder,
-                               @Value("${job.provider.remotive.url}") String apiUrl) { // e.g. https://remotive.com/api
+                               @Value("${job.provider.remotive.url}") String apiUrl) {
         this.webClient = webClientBuilder
                 .baseUrl(apiUrl)
                 .build();
@@ -37,7 +37,7 @@ public class RemotiveJobProvider implements JobProvider {
 
             RemotiveApiResponse response = webClient.get()
                     .uri(uriBuilder -> uriBuilder
-                            .path("/remote-jobs")               // /api/remote-jobs from baseUrl=https://remotive.com/api
+                            .path("/remote-jobs")
                             .queryParam("search", keywordParam)
                             .queryParam("limit", 10)            // align with Jooble's "10" rows
                             .build())

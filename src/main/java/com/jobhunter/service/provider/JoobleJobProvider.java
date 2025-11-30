@@ -18,10 +18,10 @@ public class JoobleJobProvider implements JobProvider {
     private final String apiKey;
 
     public JoobleJobProvider(WebClient.Builder webClientBuilder,
-                             @Value("${job.provider.jooble.url}") String apiUrl,        // should be https://jooble.org
-                             @Value("${job.provider.jooble.api_key}") String apiKey) {  // your actual key
+                             @Value("${job.provider.jooble.url}") String apiUrl,
+                             @Value("${job.provider.jooble.api_key}") String apiKey) {
         this.webClient = webClientBuilder
-                .baseUrl(apiUrl) // https://jooble.org
+                .baseUrl(apiUrl)
                 .build();
         this.apiKey = apiKey;
     }
