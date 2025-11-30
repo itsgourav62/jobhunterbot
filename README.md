@@ -1,288 +1,329 @@
-# 🤖 Job Hunter Bot - Automated Job Search & Application System
+# 🤖 Job Hunter Bot - Intelligent Job Matching System
 
-[![CI/CD](https://github.com/yourusername/jobhunterbot/actions/workflows/job-hunter-ci.yml/badge.svg)](https://github.com/yourusername/jobhunterbot/actions)
-[![Java](https://img.shields.io/badge/Java-24-orange.svg)](https://openjdk.java.net/)
-[![Selenium](https://img.shields.io/badge/Selenium-4.15-green.svg)](https://selenium.dev/)
+[![Java](https://img.shields.io/badge/Java-17-orange.svg)](https://openjdk.java.net/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-2.7.14-green.svg)](https://spring.io/projects/spring-boot)
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/itsgourav62/jobhunterbot)
 
-An intelligent, automated job hunting system that searches for jobs across multiple platforms, matches them against your resume, and applies automatically. Built with Java, Selenium, and modern CI/CD practices.
+An intelligent job matching system that fetches jobs from multiple API providers, parses your resume to extract skills and experience, and intelligently matches job postings against your profile. Built with Java 17, Spring Boot, and reactive WebClient.
 
 ## 🚀 Features
 
-### 🔍 **Multi-Platform Job Fetching**
-- **Naukri.com** - India's largest job portal
-- **Indeed** - Global job search engine  
-- **AngelList/Wellfound** - Startup ecosystem jobs
-- **Glassdoor** - Company reviews + jobs
-- **RemoteOK API** - Remote work opportunities (TOS-compliant)
+### 🔍 **Multi-Source Job Fetching**
+- **Remotive API** - Remote job opportunities
+- **RemoteOK API** - Remote work listings
+- **Adzuna API** - Comprehensive job search engine
+- **Arbeitnow API** - Job postings aggregator
+- **Jooble API** - Multi-country job search
+- **Y Combinator / Hacker News API** - Startup and tech jobs
 
-### 🎯 **Intelligent Job Matching**
-- Advanced skill matching with synonyms
-- Experience level analysis
-- Keyword sentiment analysis (positive/negative terms)
-- Weighted scoring algorithm (60% skills, 25% experience, 15% keywords)
-- Real-time matching analytics
+### 📄 **Resume Parsing & Skill Extraction**
+- PDF and text resume support using Apache Tika
+- Automatic name and experience extraction via regex patterns
+- Intelligent skill detection from predefined skill keywords
+- Target job title identification (Backend Engineer, Frontend Engineer, etc.)
+- Support for both file uploads and text input
 
-### 🤖 **Automated Application Process**
-- Browser automation with Selenium WebDriver
-- Auto-fill personal details (name, email, phone)  
-- Resume upload automation
-- Rate-limiting and anti-detection measures
-- Application tracking and duplicate prevention
+### 🎯 **Intelligent Job Matching Algorithm**
+- Multi-factor matching: 70% skill match + 30% job title match
+- Skill-based filtering against job descriptions
+- Experience level consideration
+- Real-time match score calculation (0-100% compatibility)
+- Ranked results with matching reasons
 
-### 📊 **Smart Analytics & Reporting**
-- Match score analytics (0-100% compatibility)
-- Daily application limits and tracking
-- Performance metrics and success rates
-- Discord/Email notifications with detailed reports
+### 🌐 **Web-Based User Interface**
+- Bootstrap 5 responsive design
+- Resume upload and paste functionality
+- Real-time job matching results display
+- Detailed job cards with match explanations
+- Clean, intuitive UX
 
-### 🔄 **CI/CD Automation**
-- **GitHub Actions** for automated daily runs
-- Headless browser support for cloud execution
-- API-only mode for faster, TOS-compliant searches
-- Configurable scheduling (daily at 9 AM UTC / 2:30 PM IST)
-- Environment-based configuration management
+### ⚡ **Spring Boot Architecture**
+- Reactive WebClient for non-blocking API calls
+- Plugin-based job provider system via Spring Components
+- Parallel job fetching from multiple providers
+- Dependency injection and Spring annotations
+- RESTful controller-based design
 
 ## 📋 Quick Start
 
 ### Prerequisites
-- **Java 24** (Oracle JDK recommended)
-- **Chrome/Chromium Browser** (for Selenium)
-- **Git** for version control
+- **Java 17** (Oracle JDK or OpenJDK)
+- **Gradle** (included via gradlew)
+- Modern web browser (for web interface)
 
 ### 🛠️ Local Setup
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/jobhunterbot.git
+   git clone https://github.com/itsgourav62/jobhunterbot.git
    cd jobhunterbot
    ```
 
-2. **Configure environment variables**
+2. **Configure API keys** (optional, some providers don't require keys)
    ```bash
-   cp .env.example .env
-   # Edit .env with your details:
-   ```
-   
-   ```bash
-   JOB_HUNTER_EMAIL=your.email@gmail.com
-   JOB_HUNTER_PHONE=+91XXXXXXXXXX
-   RESUME_PATH=/path/to/your/resume.pdf
-   DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/...
-   EMAIL_FROM=your.email@gmail.com
-   EMAIL_PASSWORD=your_app_password
+   # Create .env or set environment variables for optional APIs
+   export ADZUNA_APP_ID=your_app_id
+   export ADZUNA_APP_KEY=your_app_key
+   export JOOBLE_API_KEY=your_api_key
    ```
 
-3. **Test setup**
+3. **Build the project**
    ```bash
-   ./gradlew testSetup
+   ./gradlew clean build
    ```
 
-4. **Run the bot**
+4. **Run the application**
    ```bash
-   # Full job search with browser automation
-   ./gradlew runBot
-   
-   # API-only search (faster, TOS-compliant)
-   ./gradlew runAPIJob
+   ./gradlew bootRun
    ```
+   
+   The web server starts on `http://localhost:8080`
+
+5. **Access the web interface**
+   - Navigate to `http://localhost:8080`
+   - Upload a resume (PDF or text)
+   - Click "Find Matching Jobs"
+   - View results with match scores and reasons
 
 ## 🔧 Configuration
 
-### Environment Variables
+### Application Properties
 
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `JOB_HUNTER_EMAIL` | Your email for applications | `john@example.com` |
-| `JOB_HUNTER_PHONE` | Phone number | `+911234567890` |
-| `RESUME_PATH` | Path to resume file | `/path/to/resume.pdf` |
-| `DISCORD_WEBHOOK_URL` | Discord notifications | `https://discord.com/api/webhooks/...` |
-| `EMAIL_FROM` | Email sender | `alerts@gmail.com` |
-| `EMAIL_PASSWORD` | Email app password | `your_app_password` |
+The application is configured via `src/main/resources/application.properties`:
 
-### Skills Configuration
-Edit your skills in `Main.java` or `APIJobRunner.java`:
-```java
-Arrays.asList("Java", "Spring", "React", "Python", "Node.js", "SQL", "JavaScript")
+```properties
+# Server Configuration
+server.port=8080
+
+# Job Provider API Endpoints
+job.provider.remotive.url=https://remotive.com/api
+job.provider.arbeitnow.url=https://www.arbeitnow.com
+job.provider.remoteok.url=https://remoteok.com
+job.provider.adzuna.url=https://api.adzuna.com/v1/api/jobs/gb
+job.provider.jooble.url=https://jooble.org
+job.provider.yc.url=https://hacker-news.firebaseio.com/v0
 ```
 
-## 🔄 GitHub Actions Automation
+### Optional API Keys (Environment Variables)
 
-### Setup GitHub Secrets
-1. Go to your repository → Settings → Secrets and Variables → Actions
-2. Add these secrets:
-   - `JOB_HUNTER_EMAIL`
-   - `JOB_HUNTER_PHONE` 
-   - `RESUME_PATH`
-   - `DISCORD_WEBHOOK_URL`
-   - `EMAIL_FROM`
-   - `EMAIL_PASSWORD`
+| Variable | Provider | Required | Obtain From |
+|----------|----------|----------|-------------|
+| `ADZUNA_APP_ID` | Adzuna | Optional | [adzuna.com](https://developer.adzuna.com) |
+| `ADZUNA_APP_KEY` | Adzuna | Optional | [adzuna.com](https://developer.adzuna.com) |
+| `JOOBLE_API_KEY` | Jooble | Optional | [jooble.org](https://jooble.org/api) |
 
-### Automated Workflows
+**Note:** Most job providers work without API keys. Free-tier APIs are used by default.
 
-#### 🕘 **Daily Job Search** (Scheduled)
-- Runs every day at 9 AM UTC (2:30 PM IST)
-- Full job search across all platforms
-- Automatic application to top matches
-- Discord notifications with results
+## 🏗️ Project Architecture
 
-#### 🌐 **API-Only Search** (Manual)
-- Faster execution using only APIs
-- TOS-compliant job fetching
-- Perfect for testing and frequent runs
-- Trigger: `Actions` → `Run workflow` → Select "api_only"
-
-#### ✅ **Health Check** (On Push)  
-- Validates code changes
-- Tests Gradle build
-- Ensures system health
-
-### Manual Triggers
-```bash
-# Via GitHub Actions UI:
-Actions → Job Hunter Bot CI/CD → Run workflow
-```
-
-Choose run type:
-- `test` - Health check only
-- `full_job_search` - Complete job search with browser automation
-- `api_only` - API-based search only
-
-## 📊 Understanding Match Scores
-
-The bot uses a weighted scoring algorithm:
-
-- **Skills Match (60%)**: Direct skill mentions + synonyms
-- **Experience Level (25%)**: Senior vs junior role analysis  
-- **Keywords Analysis (15%)**: Positive/negative terms
-
-### Score Ranges:
-- **90-100%**: Perfect match - high priority
-- **70-89%**: Excellent match - apply immediately  
-- **60-69%**: Good match - worth applying
-- **40-59%**: Fair match - consider manually
-- **Below 40%**: Poor match - skip
-
-## 🚀 Architecture
-
-### Core Components:
+### Core Structure:
 
 ```
 📦 com.jobhunter
- ┣ 📂 autofill          # Browser automation & form filling
- ┣ 📂 config           # Application configuration  
- ┣ 📂 cron             # Job scheduling & orchestration
- ┣ 📂 fetcher          # Job platform scrapers/APIs
- ┣ 📂 matcher          # Resume-job matching engine
- ┣ 📂 model            # Data models (Job, Resume)
- ┣ 📂 notifier         # Discord/Email notifications
- ┣ 📂 parser           # Resume parsing (PDF/DOCX)
- ┗ 📂 storage          # Database & application tracking
+ ┣ 📂 config           # Configuration (EnvConfig)
+ ┣ 📂 controller       # Web controllers (WebController)
+ ┣ 📂 model            # Data models (CandidateProfile, JobPosting, MatchedJob)
+ ┣ 📂 service          # Business logic layer
+ ┃  ┣ JobService.java         # Orchestrates job fetching from providers
+ ┃  ┣ MatchingService.java     # Implements matching algorithm
+ ┃  ┣ ResumeService.java       # Resume parsing & skill extraction
+ ┃  ┗ provider/                # Job provider implementations (Remotive, RemoteOK, Adzuna, etc.)
+ ┗ 📂 resources
+    ┣ application.properties    # API configuration
+    ┗ templates/index.html      # Web interface
 ```
 
-### Job Fetcher Architecture:
+### How It Works:
 
-- **Scraping Fetchers**: Naukri, Indeed, AngelList, Glassdoor
-- **API Fetchers**: RemoteOK (TOS-compliant, faster)
-- **Parallel Processing**: Concurrent job fetching for better performance
-- **Rate Limiting**: Built-in delays to avoid blocking
+1. **User Upload**: Resume (PDF/text) uploaded via web interface
+2. **Resume Parsing**: `ResumeService` extracts name, experience, skills using Apache Tika + regex
+3. **Job Fetching**: `JobService` queries all `JobProvider` implementations in parallel
+4. **Matching**: `MatchingService` scores jobs using skill and title matching (70%/30% weights)
+5. **Display**: Results ranked by match score and displayed in UI
 
-## 🛡️ Compliance & Best Practices
+## 🔌 Job Providers (Pluggable Architecture)
 
-### ✅ **TOS-Compliant Options**
-- **RemoteOK API**: Official API, no scraping
-- **API-only mode**: Use `./gradlew runAPIJob` for compliant runs
-- **Rate limiting**: Automatic delays between requests
+Each job provider implements the `JobProvider` interface:
 
-### ⚠️ **Scraping Considerations**  
-- **LinkedIn**: Removed due to TOS violations
-- **Respectful scraping**: Built-in delays and limits
-- **User-Agent rotation**: Reduces detection risk
+| Provider | URL | API Key Required | Status |
+|----------|-----|------------------|--------|
+| RemotiveJobProvider | remotive.com/api | ❌ No | ✅ Active |
+| RemoteOKJobProvider | remoteok.com/api | ❌ No | ✅ Active |
+| AdzunaJobProvider | api.adzuna.com | ✅ Optional | ✅ Active |
+| ArbeitnowJobProvider | arbeitnow.com | ❌ No | ✅ Active |
+| JoobleJobProvider | jooble.org | ✅ Optional | ✅ Active |
+| YCombinatorJobProvider | hacker-news.firebaseio.com | ❌ No | ✅ Active |
 
-### 🔒 **Security**
-- Environment variable configuration
-- No hardcoded credentials
-- GitHub Secrets for CI/CD
-- Resume path flexibility (local or cloud)
+All providers are automatically registered as Spring `@Component` beans and injected into `JobService`.
+
+## 🎯 Matching Algorithm
+
+The system uses a two-factor scoring model:
+
+```
+Match Score = (Skill Match × 0.7) + (Title Match × 0.3)
+```
+
+### Skill Matching (70% weight):
+- Extracts skills from resume using predefined keywords
+- Searches for skill mentions in job description
+- Score = (matched skills / total skills) × 100%
+
+### Title Matching (30% weight):  
+- Checks if job title contains target job titles
+- Binary: 1.0 if match found, 0.0 otherwise
+- Example: "Backend Engineer" matches "Senior Backend Engineer"
+
+### Result Filtering:
+- Only jobs with score > 10% are displayed
+- Results sorted in descending order by match score
+
+## 📋 Detected Skills
+
+The resume parser searches for these keywords:
+
+```
+java, spring, spring boot, sql, postgresql, mysql, docker, aws, 
+kubernetes, python, javascript, react, go, microservices, rest, 
+api, git, maven, gradle, jenkins, kafka
+```
+
+Add more skills by editing `ResumeService.SKILL_KEYWORDS` set.
+
+## 🌐 Web Interface
+
+### URL: `http://localhost:8080`
+
+**Features:**
+- Textarea for pasting resume text
+- File upload for PDF/TXT resumes
+- Real-time matching
+- Display of parsed profile (name, skills, experience)
+- Job results with:
+  - Job title and company
+  - Location
+  - Match score and reason
+  - Apply button linking to job posting
+
+## 🚀 Running Tests
+
+```bash
+# Run all tests
+./gradlew test
+
+# Run specific test class
+./gradlew test --tests ResumeParserTest
+
+# Run with coverage
+./gradlew test jacocoTestReport
+```
+
+## 🛠️ Technologies Used
+
+- **Java 17**: Modern JDK with records, text blocks, and pattern matching
+- **Spring Boot 2.7.14**: Framework for rapid application development
+- **WebFlux**: Reactive, non-blocking HTTP client for API calls
+- **Apache Tika 2.8.0**: Resume parsing (PDF/TXT support)
+- **Jackson**: JSON serialization/deserialization
+- **Thymeleaf**: Server-side template engine
+- **Bootstrap 5**: Responsive UI framework
+- **Gradle**: Build automation
 
 ## 🐛 Troubleshooting
 
 ### Common Issues:
 
-1. **Browser not found**
+1. **Job providers return empty results**
+   - Verify API endpoints in `application.properties`
+   - Check network connectivity
+   - Some APIs may have rate limiting; wait a few minutes
+
+2. **Resume parsing issues**
+   - Ensure PDF is not password-protected
+   - Try copying text and pasting directly
+   - Check that skills are in the predefined keyword list
+
+3. **ClassNotFoundException or build errors**
    ```bash
-   # Install Chrome/Chromium
-   # For Ubuntu:
-   sudo apt-get install chromium-browser
+   ./gradlew clean build
    ```
 
-2. **Java version mismatch**
+4. **Port 8080 already in use**
    ```bash
-   # Check Java version
-   java -version
-   # Should be Java 24+
+   # Change port in application.properties
+   server.port=8081
    ```
 
-3. **Selenium WebDriver issues**
-   ```bash
-   # Clear browser cache, restart
-   # Check Chrome version compatibility
-   ```
-
-4. **No jobs found**
-   - Check your skills configuration
-   - Try API-only mode: `./gradlew runAPIJob`
-   - Verify internet connection
-
-5. **CI/CD failures**
-   - Check GitHub Secrets are properly set
-   - Verify Discord webhook URL format
-   - Check logs in Actions tab
-
-## 📈 Performance Optimization
-
-### Speed Improvements:
-- **Parallel fetching**: Multiple sources simultaneously
-- **API-first approach**: Prioritize API over scraping  
-- **Headless browser**: Faster execution in CI/CD
-- **Smart caching**: Avoid duplicate job processing
-
-### Resource Management:
-- **Connection pooling**: Efficient HTTP requests
-- **Memory optimization**: Cleanup after each run
-- **Timeout handling**: Prevent hanging processes
+5. **WebClient errors**
+   - Check internet connection
+   - Verify API endpoints are accessible
+   - Check application logs for detailed error messages
 
 ## 🤝 Contributing
 
 1. Fork the repository
-2. Create feature branch: `git checkout -b feature/amazing-feature`
-3. Add your job fetcher in `com.jobhunter.fetcher`
-4. Update `JobFetcherFactory` to register new fetcher
-5. Test thoroughly: `./gradlew test`
-6. Submit pull request
+2. Create a feature branch: `git checkout -b feature/your-feature`
+3. Make changes and test thoroughly
+4. Commit with clear messages: `git commit -m 'Add new job provider'`
+5. Push to your fork: `git push origin feature/your-feature`
+6. Submit a pull request
 
-### Adding New Job Platforms:
+### Guidelines:
+- Follow existing code style and patterns
+- Add unit tests for new features
+- Update README if adding new providers or features
+- Ensure all tests pass: `./gradlew test`
+
+### Adding a New Job Provider:
 ```java
-// Implement JobFetcher interface
-public class NewPlatformFetcher implements JobFetcher {
+@Component
+public class NewJobProvider implements JobProvider {
+    private final WebClient webClient;
+    
+    public NewJobProvider(WebClient.Builder builder, @Value("${job.provider.new.url}") String url) {
+        this.webClient = builder.baseUrl(url).build();
+    }
+    
     @Override
-    public List<Job> fetchJobs(List<String> skills) {
-        // Your implementation
+    public List<JobPosting> getJobs(String... keywords) {
+        // Fetch and map to JobPosting
+        return Collections.emptyList();
     }
 }
-
-// Register in JobFetcherFactory
-this.scrapingFetchers.add(new NewPlatformFetcher());
 ```
 
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## ⚖️ Disclaimer
+## 🙏 Acknowledgments
 
-This tool is for educational and personal use. Users are responsible for complying with job platform Terms of Service. The authors are not responsible for any misuse or violations.
+- **Apache Tika** - For PDF/document parsing
+- **Spring Boot Team** - For the excellent framework
+- **Job API Providers** - Remotive, RemoteOK, Adzuna, and others for free APIs
+- **Bootstrap** - For responsive UI components
+
+## 💡 Future Improvements
+
+- [ ] Machine learning-based matching algorithm
+- [ ] Additional resume formats (DOCX, RTF)
+- [ ] Email notifications with job matches
+- [ ] User authentication and saved profiles
+- [ ] Dashboard with matching statistics
+- [ ] Integration with LinkedIn/Indeed
+- [ ] Scheduled job searches via Quartz scheduler
+- [ ] Docker containerization for easy deployment
+
+## 📞 Support
+
+For issues, feature requests, or questions:
+1. Check existing [GitHub Issues](https://github.com/itsgourav62/jobhunterbot/issues)
+2. Create a new issue with detailed description
+3. Include stack traces and logs if reporting bugs
 
 ---
+
+**Built with ❤️ by Gourav | [GitHub](https://github.com/itsgourav62) | [Portfolio](#)**
 
 ## 🎯 Roadmap
 
