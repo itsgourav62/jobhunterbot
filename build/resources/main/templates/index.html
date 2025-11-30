@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Hunter Bot</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h1>Job Hunter Bot</h1>
+            <p>Find jobs that match your resume.</p>
+        </div>
+        <div class="card-body">
+            <form action="/match-jobs" method="post" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label for="resumeText" class="form-label">Paste Resume Text</label>
+                    <textarea class="form-control" id="resumeText" name="resumeText" rows="10"></textarea>
+                </div>
+                <div class="mb-3 text-center">
+                    <strong>OR</strong>
+                </div>
+                <div class="mb-3">
+                    <label for="resumeFile" class="form-label">Upload Resume File</label>
+                    <input class="form-control" type="file" id="resumeFile" name="resumeFile">
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Find Matching Jobs</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Results Section -->
+    <div th:if="${profile != null}" class="mt-5">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h2>Matching Results</h2>
+            </div>
+            <div class="card-body">
+                <h4>Profile Parsed</h4>
+                <p><strong>Name:</strong> <span th:text="${profile.name}"></span></p>
+                <p><strong>Skills Detected:</strong> <span class="badge bg-secondary me-1" th:each="skill : ${profile.skills}" th:text="${skill}"></span></p>
+                <hr>
+                <h4>Job Matches</h4>
+                <div th:if="${#lists.isEmpty(matchedJobs)}">
+                    <p class="text-muted">No matching jobs found.</p>
+                </div>
+                <div th:each="match : ${matchedJobs}" class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${match.job.title} + ' @ ' + ${match.job.company}">Job Title</h5>
+                        <h6 class="card-subtitle mb-2 text-muted" th:text="'Location: ' + ${match.job.location}">Location</h6>
+                        <p class="card-text">
+                            <strong>Match Score:</strong>
+                            <span th:text="${#numbers.formatDecimal(match.score * 100, 1, 1)} + '%'"></span>
+                        </p>
+                        <p class="card-text" th:text="${match.reason}"></p>
+                        <a th:href="${match.job.applyUrl}" class="btn btn-sm btn-outline-primary" target="_blank">Apply</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Section -->
+    <div th:if="${error != null}" class="alert alert-danger mt-4" role="alert" th:text="${error}">
+        Error message will be displayed here.
+    </div>
+</div>
+</body>
+</html>

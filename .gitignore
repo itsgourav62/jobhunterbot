@@ -38,7 +38,7 @@ target/
 *.sublime-workspace
 *.sublime-project
 *.vscode/
-.env*
+.env
 build/resources/test/.gitkeep
 build/tmp/
 build/generated/
