@@ -72,6 +72,8 @@ jobs:
         JOB_HUNTER_PHONE: ${{ env.JOB_HUNTER_PHONE }}
         RESUME_PATH: ${{ env.RESUME_PATH }}
         DISCORD_WEBHOOK_URL: ${{ env.DISCORD_WEBHOOK_URL }}
+        # Disable auto-apply features in CI by default (safety)
+        AUTO_APPLY: false
 
     - name: ✅ Validate setup and configuration
       run: ./gradlew validateSetup --no-daemon --stacktrace
@@ -98,13 +100,23 @@ jobs:
           build/reports/tests/
           build/test-results/
 
-  # Smart job discovery and application workflow (12-hour schedule)
+  # Smart job discovery and application workflow (12-hour schedule) - REQUIRES EXPLICIT ENABLE
   smart-job-discovery:
     needs: build-and-test
     runs-on: ubuntu-latest
-    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && (github.event.inputs.run_type == 'smart_apply' || github.event.inputs.run_type == 'test_job_search'))
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.run_type == 'smart_apply' && contains(github.event.inputs.run_type, 'ENABLE_AUTO_APPLY')
     
     steps:
+    - name: ⚠️ Auto-Apply Safety Check
+      run: |
+        echo "======================================"
+        echo "⚠️  AUTO-APPLY MODE REQUESTED"
+        echo "======================================"
+        echo "This mode will attempt to automatically apply to jobs using browser automation."
+        echo "It should only be used by repository administrators who understand the risks."
+        echo "To enable, manually trigger with 'smart_apply_ENABLE_AUTO_APPLY' as run_type."
+        echo "======================================"
+        
     - name: 📋 Checkout repository
       uses: actions/checkout@v4
 
@@ -142,7 +154,8 @@ jobs:
       run: |
         export DISPLAY=:99
         export headless=true
-        timeout 1200s ./gradlew smartApply --no-daemon --stacktrace || echo "Smart workflow completed or timed out (20 min limit)"
+        export AUTO_APPLY=true
+        timeout 1200s ./gradlew runLegacy --no-daemon --stacktrace || echo "Smart workflow completed or timed out (20 min limit)"
       env:
         JOB_HUNTER_NAME: ${{ env.JOB_HUNTER_NAME }}
         JOB_HUNTER_EMAIL: ${{ env.JOB_HUNTER_EMAIL }}
@@ -152,6 +165,7 @@ jobs:
         EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
         EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
         EMAIL_TO: ${{ secrets.EMAIL_TO }}
+        AUTO_APPLY: true # Explicitly enable for this step
 
     - name: 📄 Upload Job Application Files
       uses: actions/upload-artifact@v4

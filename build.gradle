@@ -1,14 +1,15 @@
 plugins {
     id 'java'
-    id 'application'
+    id 'org.springframework.boot' version '2.7.14'
+    id 'io.spring.dependency-management' version '1.0.15.RELEASE'
 }
 
 group = 'com.jobhunter'
 version = '2.0.0'
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 repositories {
@@ -16,66 +17,35 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.seleniumhq.selenium:selenium-java:4.15.0'
-    implementation 'com.google.code.gson:gson:2.10.1'
+    // Spring Boot Core
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    
+    // Database
+    runtimeOnly 'com.h2database:h2'
+    
+    // Resume Parsing  
     implementation 'org.apache.tika:tika-core:2.4.1'
     implementation 'org.apache.tika:tika-parsers:2.4.1'
-    implementation 'org.slf4j:slf4j-simple:2.0.9'
-    implementation 'jakarta.mail:jakarta.mail-api:2.1.2'
-    implementation 'org.eclipse.angus:jakarta.mail:2.0.1'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.0'
-    implementation 'com.h2database:h2:2.2.224'
-
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.10.0'
+    
+    // HTTP Client for Job APIs
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    
+    // JSON Processing
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+    
+    // PDF Processing
+    implementation 'org.apache.pdfbox:pdfbox:2.0.29'
+    
+    // OpenAI for cover letters (optional)
+    implementation 'com.theokanning.openai-gpt3-java:service:0.16.0'
+    
+    // Testing
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.junit.jupiter:junit-jupiter'
 }
 
 test {
     useJUnitPlatform()
-    testLogging {
-        events "passed", "skipped", "failed"
-        exceptionFormat "full"
-        showStandardStreams = true
-    }
-}
-
-// Main application task
-application {
-    mainClass = 'com.jobhunter.Main'
-}
-
-// Task to run API-only job search (faster for CI/CD)
-task runAPIJob(type: JavaExec) {
-    group = 'application'
-    description = 'Run API-only Job Search (faster, TOS-compliant)'
-    classpath = sourceSets.main.runtimeClasspath
-    mainClass = 'com.jobhunter.APIJobRunner'
-    standardOutput = System.out
-    errorOutput = System.err
-    jvmArgs = ['-Dfile.encoding=UTF-8', '-Dheadless=true']
-    outputs.upToDateWhen { false }
-}
-
-// Smart application workflow task
-task smartApply(type: JavaExec) {
-    group = 'application'
-    description = 'Smart job application workflow - finds best job matches'
-    classpath = sourceSets.main.runtimeClasspath
-    mainClass = 'com.jobhunter.workflow.SmartApplicationWorkflow'
-    standardOutput = System.out
-    errorOutput = System.err
-    jvmArgs = ['-Dfile.encoding=UTF-8']
-    outputs.upToDateWhen { false }
-}
-
-// Setup validation task
-task validateSetup(type: JavaExec) {
-    group = 'verification'
-    description = 'Validate Job Hunter Bot setup and configuration'
-    classpath = sourceSets.main.runtimeClasspath
-    mainClass = 'com.jobhunter.SetupValidator'
-    standardOutput = System.out
-    errorOutput = System.err
-    jvmArgs = ['-Dfile.encoding=UTF-8']
 }

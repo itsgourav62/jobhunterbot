@@ -1,0 +1,33 @@
+John Doe
+john.doe@example.com
+Location: San Francisco, CA
+Phone: (555) 123-4567
+
+PROFESSIONAL SUMMARY
+Senior Software Engineer with 5+ years of experience developing scalable web applications 
+and microservices. Expertise in Java, Spring Boot, React, and cloud technologies.
+
+EXPERIENCE
+
+Senior Software Engineer | TechCorp Inc. | 2020 - Present
+- Developed and maintained microservices using Java and Spring Boot
+- Built responsive web applications using React and TypeScript
+- Implemented CI/CD pipelines using Jenkins and Docker
+- Collaborated with cross-functional teams in an Agile environment
+
+Software Engineer | StartupInc | 2019 - 2020
+- Designed and developed REST APIs using Java and Spring Framework
+- Worked with MySQL and PostgreSQL databases
+- Implemented automated testing using JUnit and Mockito
+- Participated in code reviews and maintained high code quality standards
+
+TECHNICAL SKILLS
+- Programming Languages: Java, JavaScript, TypeScript, Python
+- Frameworks: Spring Boot, Spring Security, React, Angular
+- Databases: MySQL, PostgreSQL, MongoDB, Redis
+- Cloud & DevOps: AWS, Docker, Kubernetes, Jenkins
+- Tools: Git, Maven, Gradle, IntelliJ IDEA
+
+EDUCATION
+Bachelor of Science in Computer Science
+University of California, Berkeley | 2015 - 2019

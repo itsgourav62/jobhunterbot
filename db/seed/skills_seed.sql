@@ -1,0 +1,30 @@
+-- Skills normalization seed data
+-- This table maps skill aliases to canonical skill names
+
+INSERT INTO skills (canonical_name, aliases) VALUES 
+('Java', '["java", "java programming", "java development", "java8", "java 8", "java11", "java 11", "java17", "java 17", "java21", "java 21", "openjdk"]'),
+('Spring Framework', '["spring", "spring framework", "spring boot", "springboot", "spring mvc", "spring security", "spring data", "spring cloud"]'),
+('Python', '["python", "python programming", "python development", "python3", "python 3", "py"]'),
+('JavaScript', '["javascript", "js", "ecmascript", "es6", "es2015", "es2020", "node.js", "nodejs"]'),
+('React', '["react", "reactjs", "react.js", "react native", "react-native"]'),
+('Angular', '["angular", "angularjs", "angular2", "angular 2", "angular4", "angular 4", "typescript angular"]'),
+('Docker', '["docker", "containerization", "containers", "docker compose", "docker-compose"]'),
+('Kubernetes', '["kubernetes", "k8s", "container orchestration", "kubectl", "helm"]'),
+('AWS', '["aws", "amazon web services", "amazon aws", "ec2", "s3", "lambda", "cloudformation"]'),
+('MySQL', '["mysql", "mysql database", "mysql server", "mariadb"]'),
+('PostgreSQL', '["postgresql", "postgres", "psql", "pg"]'),
+('MongoDB', '["mongodb", "mongo", "nosql", "document database"]'),
+('Git', '["git", "version control", "github", "gitlab", "bitbucket", "git version control"]'),
+('HTML', '["html", "html5", "markup", "hypertext markup language"]'),
+('CSS', '["css", "css3", "cascading style sheets", "styling", "responsive design"]'),
+('SQL', '["sql", "structured query language", "database queries", "rdbms"]'),
+('REST API', '["rest", "rest api", "restful", "restful api", "web services", "api development"]'),
+('Microservices', '["microservices", "microservice", "service oriented architecture", "soa", "distributed systems"]'),
+('Jenkins', '["jenkins", "continuous integration", "ci/cd", "build automation", "devops"]'),
+('Machine Learning', '["machine learning", "ml", "artificial intelligence", "ai", "data science", "predictive modeling"]'),
+('Redis', '["redis", "caching", "in-memory database", "key-value store"]'),
+('GraphQL', '["graphql", "graph ql", "query language", "api query language"]'),
+('TypeScript', '["typescript", "ts", "typed javascript", "javascript with types"]'),
+('Vue.js', '["vue", "vuejs", "vue.js", "vue framework"]'),
+('C#', '["c#", "csharp", "c sharp", ".net", "dotnet"]'),
+('Go', '["go", "golang", "go programming", "go language"]');

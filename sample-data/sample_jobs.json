@@ -1,0 +1,62 @@
+[
+  {
+    "title": "Senior Java Developer",
+    "company": "TechCorp Solutions",
+    "location": "San Francisco, CA",
+    "description": "We are looking for a Senior Java Developer to join our backend team. You will be responsible for developing and maintaining our microservices architecture using Java and Spring Boot.",
+    "requiredSkills": ["Java", "Spring Framework", "MySQL", "REST API"],
+    "preferredSkills": ["Docker", "AWS", "Kubernetes"],
+    "minExperience": 4,
+    "maxExperience": 8,
+    "salary": "$120,000 - $150,000",
+    "jobUrl": "https://techcorp.com/jobs/senior-java-developer"
+  },
+  {
+    "title": "Full Stack Software Engineer",
+    "company": "InnovateNow Inc",
+    "location": "Remote",
+    "description": "Join our innovative team as a Full Stack Engineer. Work with modern technologies including React, Node.js, and cloud platforms to build cutting-edge applications.",
+    "requiredSkills": ["JavaScript", "React", "Node.js", "SQL"],
+    "preferredSkills": ["TypeScript", "AWS", "MongoDB"],
+    "minExperience": 3,
+    "maxExperience": 6,
+    "salary": "$100,000 - $130,000",
+    "jobUrl": "https://innovatenow.com/careers/fullstack-engineer"
+  },
+  {
+    "title": "Backend Engineer - Python",
+    "company": "DataTech Systems",
+    "location": "New York, NY",
+    "description": "Looking for a Backend Engineer with strong Python skills to work on our data processing pipelines and API development.",
+    "requiredSkills": ["Python", "Django", "PostgreSQL", "REST API"],
+    "preferredSkills": ["Redis", "Docker", "Machine Learning"],
+    "minExperience": 2,
+    "maxExperience": 5,
+    "salary": "$95,000 - $125,000",
+    "jobUrl": "https://datatech.com/jobs/python-backend-engineer"
+  },
+  {
+    "title": "DevOps Engineer",
+    "company": "CloudFirst Technologies",
+    "location": "Austin, TX",
+    "description": "Seeking a DevOps Engineer to manage our cloud infrastructure and deployment pipelines. Experience with AWS, Docker, and Kubernetes required.",
+    "requiredSkills": ["Docker", "Kubernetes", "AWS", "Jenkins"],
+    "preferredSkills": ["Terraform", "Python", "Monitoring"],
+    "minExperience": 3,
+    "maxExperience": 7,
+    "salary": "$110,000 - $140,000",
+    "jobUrl": "https://cloudfirst.com/careers/devops-engineer"
+  },
+  {
+    "title": "Frontend Developer - React",
+    "company": "UIExperience Corp",
+    "location": "Seattle, WA",
+    "description": "Frontend Developer position focusing on React development for our customer-facing applications. Strong JavaScript and CSS skills required.",
+    "requiredSkills": ["React", "JavaScript", "CSS", "HTML"],
+    "preferredSkills": ["TypeScript", "Redux", "Webpack"],
+    "minExperience": 2,
+    "maxExperience": 5,
+    "salary": "$85,000 - $115,000",
+    "jobUrl": "https://uiexperience.com/jobs/react-developer"
+  }
+]
