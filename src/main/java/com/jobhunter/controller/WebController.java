@@ -49,6 +49,7 @@ public class WebController {
                 return "index";
             }
 
+            // Use the skills from the parsed profile to search for jobs
             List<JobPosting> jobs = jobService.searchJobs(profile.skills());
             List<MatchedJob> matchedJobs = matchingService.matchAndRank(profile, jobs);
 
